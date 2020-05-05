@@ -2,6 +2,9 @@
 #include "r__pixel_calculator.h"
 #define rt_dimensions 1024
 #include "Layers/xrRender/FBasicVisual.h"
+#ifdef USE_OGL
+void XRMatrixOrthoOffCenterLH(Fmatrix *pout, float l, float r, float b, float t, float zn, float zf);
+#endif
 
 void r_pixel_calculator::begin()
 {
@@ -37,15 +40,9 @@ static Fvector cmDir[6] = {
 
 r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
 {
-    // XXX: use glm instead of D3DXMath
-#ifdef USE_OGL
-    VERIFY(!"Not implemented!");
-    return {};
-#else
     r_aabb_ssa result = {0};
     float area = float(_sqr(rt_dimensions));
 
-    //
     u32 id[6];
     for (u32 face = 0; face < 6; face++)
     {
@@ -57,8 +54,12 @@ r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
         // camera - left-to-right
         mView.build_camera_dir(vFrom.invert(cmDir[face]).mul(100.f), cmDir[face], cmNorm[face]);
         aabb.xform(V->vis.box, mView);
-        D3DXMatrixOrthoOffCenterLH(
-            (D3DXMATRIX*)&mProject, aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
+#ifdef USE_OGL
+        XRMatrixOrthoOffCenterLH(
+#else
+        D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)
+#endif
+            &mProject, aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
         RCache.set_xform_world(Fidentity);
         RCache.set_xform_view(mView);
         RCache.set_xform_project(mProject);
@@ -77,14 +78,13 @@ r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
     //
     for (u32 it = 0; it < 6; it++)
     {
-        float pixels = (float)RImplementation.HWOCC.occq_get(id[it]);
+        float pixels = static_cast<float>(RImplementation.HWOCC.occq_get(id[it]));
         float coeff = clampr(pixels / area, float(0), float(1));
         Msg("[%d]ssa_c: %1.3f,%f/%f", it, coeff, pixels, area);
-        result.ssa[it] = (u8)clampr(iFloor(coeff * 255.f + 0.5f), int(0), int(255));
+        result.ssa[it] = static_cast<u8>(clampr(iFloor(coeff * 255.f + 0.5f), int(0), int(255)));
     }
 
     return result;
-#endif
 }
 
 void r_pixel_calculator::run()
@@ -92,10 +92,10 @@ void r_pixel_calculator::run()
     begin();
     for (u32 it = 0; it < RImplementation.Visuals.size(); it++)
     {
-        if (0 == dynamic_cast<IRender_Mesh*>(RImplementation.Visuals[it]))
+        if (nullptr == dynamic_cast<IRender_Mesh*>(RImplementation.Visuals[it]))
             continue;
         Msg("*%d*", it);
-        calculate((dxRender_Visual*)RImplementation.Visuals[it]);
+        calculate(dynamic_cast<dxRender_Visual*>(RImplementation.Visuals[it]));
     }
     end();
 }
