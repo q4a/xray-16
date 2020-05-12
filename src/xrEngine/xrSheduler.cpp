@@ -411,7 +411,8 @@ void CSheduler::Update()
     stats.Update.Begin();
     cycles_start = CPU::QPC();
     // To calculate the time limit, 1/6 part of the rendering time is taken
-    const float psShedulerCurrent = Device.GetStats().RenderTotal.result/6.0f;
+    float psShedulerCurrent = Device.GetStats().RenderTotal.result/6.0f;
+    clamp(psShedulerCurrent, 2.f, 20.f);
     cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000ul + cycles_start;
     internal_Registration();
 
