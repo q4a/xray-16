@@ -3,6 +3,8 @@
 #include "xr_object.h"
 #include "GameFont.h"
 #include "PerformanceAlert.hpp"
+#include "xrScriptEngine/script_engine.hpp"
+#include "lua.hpp"
 
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_sort.h>
@@ -360,6 +362,9 @@ void CSheduler::ProcessStep()
 
         item.Object->shedule_Update(
             clampr(Elapsed, u32(1), u32(_max(u32(schedulerData.t_max), u32(1000)))));
+
+        lua_gc(GEnv.ScriptEngine->lua(), LUA_GCSTOP, 0); // The garbage collector starts at any allocation, so after each run we disable it to avoid microfreeze
+
         if (!m_current_step_obj)
         {
 #ifdef DEBUG_SCHEDULER

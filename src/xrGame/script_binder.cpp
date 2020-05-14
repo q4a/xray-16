@@ -172,7 +172,6 @@ void CScriptBinder::shedule_Update(u32 time_delta)
             luaJIT_profile_start(GEnv.ScriptEngine->lua(), "3sm1vzfl", &profilerCallback, dump);
 #endif
             m_object->shedule_Update(time_delta);
-            lua_gc(GEnv.ScriptEngine->lua(), LUA_GCSTOP, 0); // The garbage collector starts at any allocation, so after each run we disable it to avoid microfreeze
 #ifdef _DEBUG
             luaJIT_profile_stop(GEnv.ScriptEngine->lua());
             const u64 DestroyTime = eTimer.GetElapsed_ms();
