@@ -8,6 +8,8 @@
 
 #include "xrGameSpy/xrGameSpy_MainDefs.h"
 
+#include "SDL.h"
+
 #include <malloc.h>
 
 static INetLog* pClNetLog = nullptr;
@@ -47,7 +49,7 @@ NET_Packet* INetQueue::Create()
         ready.push_back(new NET_Packet());
         P = ready.back();
         //---------------------------------------------
-        // LastTimeCreate = SDL_GetTicks();
+        LastTimeCreate = SDL_GetTicks();
         //---------------------------------------------
     } else {
         ready.push_back(unused.back());
@@ -66,7 +68,7 @@ NET_Packet* INetQueue::Create(const NET_Packet& _other)
         ready.push_back(new NET_Packet());
         P = ready.back();
         //---------------------------------------------
-        //        LastTimeCreate = SDL_GetTicks();
+        LastTimeCreate = SDL_GetTicks();
         //---------------------------------------------
     } else {
         ready.push_back(unused.back());
@@ -84,17 +86,14 @@ NET_Packet* INetQueue::Retreive()
 
     if (!ready.empty())
         P = ready.front();
-    //---------------------------------------------
     else {
-        /*
-    u32 tmp_time = SDL_GetTicks() - 60000;
-    u32 size = unused.size();
-    if ((LastTimeCreate < tmp_time) && (size > 32))
-    {
-        xr_delete(unused.back());
-        unused.pop_back();
-    }
-    */
+        u32 tmp_time = SDL_GetTicks() - 60000;
+        u32 size = unused.size();
+        if ((LastTimeCreate < tmp_time) && (size > 32))
+        {
+            xr_delete(unused.back());
+            unused.pop_back();
+        }
     }
 
     return P;
@@ -104,17 +103,16 @@ void INetQueue::Release()
 {
     VERIFY(!ready.empty());
     //---------------------------------------------
-    // u32 tmp_time = SDL_GetTicks() - 60000;
+    u32 tmp_time = SDL_GetTicks() - 60000;
     u32 size = unused.size();
     ready.front()->B.count = 0;
-    /*
-   * if ((LastTimeCreate < tmp_time) && (size > 32))
-  {
-      xr_delete(ready.front());
-  }
-  else
-      unused.push_back(ready.front());
-      */
+
+    if ((LastTimeCreate < tmp_time) && (size > 32))
+    {
+        xr_delete(ready.front());
+    }
+    else
+        unused.push_back(ready.front());
 
     ready.pop_front();
 }
@@ -217,6 +215,7 @@ void IPureClient::_Recieve(const void* data, u32 data_size, u32 /*param*/)
             return;
         }
         Msg("! Unknown system message");
+        return;
     }
     if (net_Connected == EnmConnectionCompleted) {
         // one of the messages - decompress it

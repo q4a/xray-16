@@ -2,16 +2,22 @@
 #pragma pack(push, 1)
 
 #define DPNSEND_IMMEDIATELLY 0x0100
+#ifdef LINUX
+#define DPNSEND_NOCOPY							0x0001
+#define DPNSEND_NOCOMPLETE						0x0002
+#define DPNSEND_COMPLETEONPROCESS				0x0004
+#define DPNSEND_GUARANTEED						0x0008
+#define DPNSEND_NONSEQUENTIAL					0x0010
+#define DPNSEND_NOLOOPBACK						0x0020
+#define DPNSEND_PRIORITY_LOW					0x0040
+#define DPNSEND_PRIORITY_HIGH					0x0080
+#endif
 
 IC u32 net_flags(
     bool bReliable = false, bool bSequental = true, bool bHighPriority = false, bool bSendImmediatelly = false)
 {
-#ifdef LINUX // FIXME!!!
-    return 0;
-#else
     return (bReliable ? DPNSEND_GUARANTEED : DPNSEND_NOCOMPLETE) | (bSequental ? 0 : DPNSEND_NONSEQUENTIAL) |
         (bHighPriority ? DPNSEND_PRIORITY_HIGH : 0) | (bSendImmediatelly ? DPNSEND_IMMEDIATELLY : 0);
-#endif
 }
 
 struct MSYS_CONFIG
