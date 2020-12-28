@@ -2,7 +2,7 @@
 
 #include "ResourceManager.h"
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
 template<GLenum type>
 inline std::pair<GLuint, GLuint> GLCompileShader(pcstr* buffer, size_t size, pcstr name)
 {
@@ -71,7 +71,7 @@ struct ShaderTypeTraits<SVS>
 {
     using MapType = CResourceManager::map_VS;
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -149,7 +149,7 @@ struct ShaderTypeTraits<SVS>
     {
         ResultType res{};
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -173,7 +173,7 @@ struct ShaderTypeTraits<SPS>
 {
     using MapType = CResourceManager::map_PS;
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -263,7 +263,7 @@ struct ShaderTypeTraits<SPS>
     {
         ResultType res{};
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -282,7 +282,7 @@ struct ShaderTypeTraits<SPS>
     static inline u32 GetShaderDest() { return RC_dest_pixel; }
 };
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 template <>
 struct ShaderTypeTraits<SGS>
 {
@@ -556,7 +556,7 @@ inline CResourceManager::map_VS& CResourceManager::GetShaderMap()
     return m_vs;
 }
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 template <>
 inline CResourceManager::map_GS& CResourceManager::GetShaderMap()
 {

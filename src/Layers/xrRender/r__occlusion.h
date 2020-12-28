@@ -18,7 +18,7 @@ private:
     struct _Q
     {
         u32 order;
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
         GLuint Q;
 #else
         ID3DQuery* Q;

@@ -178,7 +178,7 @@ void CBlender_Compile::PassEnd()
     dest.vs = RImplementation.Resources->_CreateVS(pass_vs);
     ctable.merge(&dest.ps->constants);
     ctable.merge(&dest.vs->constants);
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     dest.gs = RImplementation.Resources->_CreateGS(pass_gs);
     ctable.merge(&dest.gs->constants);
 #ifdef USE_DX11

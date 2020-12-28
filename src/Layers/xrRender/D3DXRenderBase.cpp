@@ -46,7 +46,7 @@ void D3DXRenderBase::setContrast(float fGamma)
 
 void D3DXRenderBase::updateGamma()
 {
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
     m_Gamma.Update();
 #endif
 }
@@ -102,7 +102,7 @@ void D3DXRenderBase::OnDeviceCreate(const char* shName)
 {
     // Signal everyone - device created
     RCache.OnDeviceCreate();
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
     m_Gamma.Update();
 #endif
     Resources->OnDeviceCreate(shName);

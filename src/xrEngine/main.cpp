@@ -241,6 +241,8 @@ void CheckAndSetupRenderer()
         Console->Execute("renderer renderer_r2");
     else if (strstr(Core.Params, "-r1"))
         Console->Execute("renderer renderer_r1");
+    else if (strstr(Core.Params, "-r1_gles"))
+        Console->Execute("renderer renderer_r1_gles");
     else
     {
         CCC_LoadCFG_custom cmd("renderer ");

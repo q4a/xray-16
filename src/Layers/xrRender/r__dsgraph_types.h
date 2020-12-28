@@ -41,7 +41,7 @@ struct _LodItem
 };
 
 using state_type = SState*;
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
 using ps_type = ID3DPixelShader*;
 #if defined(USE_DX10) || defined(USE_DX11) // DX10 and DX11 needs shader signature to properly bind geometry to shader
 using vs_type = SVS*;
@@ -101,7 +101,7 @@ struct mapNormalPS : public xr_fixed_map<ps_type, mapNormalCS>
 };
 #endif
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 struct mapNormalGS : public xr_fixed_map<gs_type, mapNormalPS>
 {
     float ssa;
@@ -157,7 +157,7 @@ struct mapMatrixPS : public xr_fixed_map<ps_type, mapMatrixCS>
 };
 #endif
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 struct mapMatrixGS : public xr_fixed_map<gs_type, mapMatrixPS>
 {
     float ssa;

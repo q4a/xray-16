@@ -38,7 +38,7 @@ public:
     //	DX10 cut DEFINE_MAP_PRED(const char*,CRTC*,			map_RTC,		map_RTCIt,			str_pred);
     using map_VS = xr_map<const char*, SVS*, str_pred>;
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     using map_GS = xr_map<const char*, SGS*, str_pred>;
 #endif
 
@@ -62,7 +62,7 @@ private:
     map_VS m_vs;
     map_PS m_ps;
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     map_GS m_gs;
 #endif
 
@@ -158,7 +158,7 @@ public:
 
 //	DX10 cut CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
 //	DX10 cut void							_DeleteRTC			(const CRTC*	RT	);
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     SGS* _CreateGS(LPCSTR Name);
     void _DeleteGS(const SGS* GS);
 #endif //	USE_DX10
@@ -187,7 +187,7 @@ public:
     SState* _CreateState(SimulatorStates& Code);
     void _DeleteState(const SState* SB);
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     SDeclaration* _CreateDecl (u32 FVF);
 #endif
 

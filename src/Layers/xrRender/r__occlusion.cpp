@@ -116,7 +116,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
         }
     }
     RImplementation.BasicStats.Wait.End();
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
     if (hr == D3DERR_DEVICELOST)
         fragments = 0xffffffff;
 #endif

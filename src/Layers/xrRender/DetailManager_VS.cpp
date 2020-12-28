@@ -116,7 +116,7 @@ void CDetailManager::hw_Unload()
     hw_VB.Release();
 }
 
-#if !defined(USE_DX10) && !defined(USE_DX11) && !defined(USE_OGL)
+#if !defined(USE_DX10) && !defined(USE_DX11) && !defined(USE_OGL) && !defined(USE_GLES)
 void CDetailManager::hw_Load_Shaders()
 {
     // Create shader to access constant storage

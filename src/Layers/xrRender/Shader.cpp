@@ -48,7 +48,7 @@ BOOL SPass::equal(const SPass& other)
         return FALSE;
     if (vs != other.vs)
         return FALSE;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     if (gs != other.gs)
         return FALSE;
 #ifdef USE_DX11

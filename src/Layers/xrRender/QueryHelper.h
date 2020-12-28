@@ -3,7 +3,7 @@
 #pragma once
 
 //	Interface
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
 IC HRESULT CreateQuery(GLuint* pQuery);
 IC HRESULT GetData(GLuint query, void* pData, UINT DataSize);
 IC HRESULT BeginQuery(GLuint query);
@@ -19,7 +19,7 @@ IC HRESULT ReleaseQuery(ID3DQuery *pQuery);
 
 //	Implementation
 
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
 
 IC HRESULT CreateQuery(GLuint* pQuery)
 {

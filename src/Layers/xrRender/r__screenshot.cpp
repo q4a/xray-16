@@ -46,7 +46,7 @@ IC void MouseRayFromPoint(Fvector& direction, int x, int y, Fmatrix& m_CamMat)
 #define SM_FOR_SEND_WIDTH 640
 #define SM_FOR_SEND_HEIGHT 480
 
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
 bool CreateImage(fipMemoryIO& output, FREE_IMAGE_FORMAT format, u8*& buffer, DWORD& bufferSize, bool gamesave = false)
 {
     const u32 width = psCurrentVidMode[0];
@@ -567,7 +567,7 @@ void CRender::ScreenshotAsyncBegin()
     m_bMakeAsyncSS = true;
 }
 
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
 
 void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 {

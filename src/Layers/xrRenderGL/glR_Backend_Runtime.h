@@ -361,4 +361,14 @@ IC void CBackend::set_Constants(R_constant_table* C)
     }
 }
 
+IC void CBackend::reset_Texture(int _last_ps)
+{
+	CHK_GL(glActiveTexture(GL_TEXTURE0 + _last_ps));
+	CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+//	if (RImplementation.o.dx10_msaa)
+//		CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+	CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
+	CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+}
+
 #endif	//	glR_Backend_Runtime_included

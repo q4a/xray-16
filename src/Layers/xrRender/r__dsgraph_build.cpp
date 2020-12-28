@@ -167,7 +167,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
                     {
                         Nps.ssa = SSA;
 #endif
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
                         if (SSA > Ngs.ssa)
                         {
                             Ngs.ssa = SSA;
@@ -176,7 +176,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
                             {
                                 Nvs.ssa = SSA;
                             }
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
                         }
 #endif
                     }
@@ -313,7 +313,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
                     {
                         Nps.ssa = SSA;
 #endif
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
                         if (SSA > Ngs.ssa)
                         {
                             Ngs.ssa = SSA;
@@ -322,7 +322,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
                             {
                                 Nvs.ssa = SSA;
                             }
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
                         }
 #endif
                     }

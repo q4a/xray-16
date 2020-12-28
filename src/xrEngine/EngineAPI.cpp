@@ -23,8 +23,10 @@ constexpr pcstr r2_library     = "xrRender_R2";
 constexpr pcstr r3_library     = "xrRender_R3";
 constexpr pcstr r4_library     = "xrRender_R4";
 constexpr pcstr gl_library     = "xrRender_GL";
+constexpr pcstr gles_library   = "xrRender_GLES";
 
 constexpr pcstr renderer_r1    = "renderer_r1";
+constexpr pcstr renderer_r1_gles = "renderer_r1_gles";
 constexpr pcstr renderer_r2a   = "renderer_r2a";
 constexpr pcstr renderer_r2    = "renderer_r2";
 constexpr pcstr renderer_r2_5  = "renderer_r2.5";
@@ -201,6 +203,8 @@ void CEngineAPI::CreateRendererList()
     renderers[gl_library] = XRay::LoadModule(gl_library);
 #if defined(WINDOWS)
     renderers[r1_library] = XRay::LoadModule(r1_library);
+#else
+    renderers[gles_library] = XRay::LoadModule(gles_library);
 #endif
 
     if (GEnv.isDedicatedServer)
@@ -250,9 +254,11 @@ void CEngineAPI::CreateRendererList()
     checkRenderer(r2_library, renderer_r2_5, 3);
     checkRenderer(r3_library, renderer_r3,   4);
     checkRenderer(r4_library, renderer_r4,   5);
+#else
+    checkRenderer(gles_library, renderer_r1_gles, 6);
 #endif
 
-    checkRenderer(gl_library, renderer_gl, 6);
+    checkRenderer(gl_library, renderer_gl, 7);
 
     modes.emplace_back(nullptr, -1);
 

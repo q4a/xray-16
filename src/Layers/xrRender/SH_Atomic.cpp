@@ -43,7 +43,7 @@ SVS::~SVS()
     //	Now it is release automatically
 #endif
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     CHK_GL(glDeleteProgram(sh));
 #else
     _RELEASE(sh);
@@ -54,7 +54,7 @@ SVS::~SVS()
 // SPS
 SPS::~SPS()
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     CHK_GL(glDeleteProgram(sh));
 #else
     _RELEASE(sh);
@@ -63,12 +63,12 @@ SPS::~SPS()
     RImplementation.Resources->_DeletePS(this);
 }
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 ///////////////////////////////////////////////////////////////////////
 // SGS
 SGS::~SGS()
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     CHK_GL(glDeleteProgram(sh));
 #else
     _RELEASE(sh);
@@ -91,7 +91,7 @@ SHS::~SHS()
 
 SDS::~SDS()
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     CHK_GL(glDeleteProgram(sh));
 #else
     _RELEASE(sh);
@@ -102,7 +102,7 @@ SDS::~SDS()
 
 SCS::~SCS()
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     CHK_GL(glDeleteProgram(sh));
 #else
     _RELEASE(sh);
@@ -144,7 +144,7 @@ SDeclaration::~SDeclaration()
 {
     RImplementation.Resources->_DeleteDecl(this);
     //	Release vertex layout
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     glDeleteVertexArrays(1, &dcl);
 #elif defined(USE_DX10) || defined(USE_DX11)
     xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;

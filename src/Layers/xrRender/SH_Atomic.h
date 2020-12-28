@@ -26,7 +26,7 @@ typedef resptr_core<SInputSignature, resptr_base<SInputSignature>> ref_input_sig
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SVS : public xr_resource_named
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint sh;
 #else
     ID3DVertexShader* sh;
@@ -43,7 +43,7 @@ typedef resptr_core<SVS, resptr_base<SVS>> ref_vs;
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SPS : public xr_resource_named
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint sh;
 #else
     ID3DPixelShader* sh;
@@ -57,7 +57,7 @@ typedef resptr_core<SPS, resptr_base<SPS>> ref_ps;
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SGS : public xr_resource_named
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint sh;
 #else
     ID3DGeometryShader* sh;
@@ -120,7 +120,7 @@ typedef resptr_core<SState, resptr_base<SState>> ref_state;
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SDeclaration : public xr_resource_flagged
 {
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
     u32 FVF;
     GLuint dcl;
 #elif defined(USE_DX10) || defined(USE_DX11)

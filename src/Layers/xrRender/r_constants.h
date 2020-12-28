@@ -72,7 +72,7 @@ struct ECORE_API R_constant_load
     u16 index; // linear index (pixel)
     u16 cls; // element class
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint location;
     GLuint program;
 
@@ -83,7 +83,7 @@ struct ECORE_API R_constant_load
 
     BOOL equal(R_constant_load& C)
     {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
         return (index == C.index) && (cls == C.cls) && (location == C.location) && (program == C.program);
 #else
         return (index == C.index) && (cls == C.cls);
@@ -99,7 +99,7 @@ struct ECORE_API R_constant : public xr_resource
 
     R_constant_load ps;
     R_constant_load vs;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     R_constant_load gs;
 #ifdef USE_DX11
     R_constant_load hs;
@@ -119,7 +119,7 @@ struct ECORE_API R_constant : public xr_resource
         {
         case RC_dest_vertex: return vs;
         case RC_dest_pixel: return ps;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
         case RC_dest_geometry: return gs;
 #ifdef USE_DX11
         case RC_dest_hull: return hs;

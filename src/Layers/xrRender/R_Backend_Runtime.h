@@ -10,6 +10,9 @@
 #if defined(USE_OGL)
 #include "Layers/xrRenderGL/glR_Backend_Runtime.h"
 #include "Layers/xrRenderGL/glState.h"
+#elif defined(USE_GLES)
+#include "Layers/xrRenderGLES/glesR_Backend_Runtime.h"
+#include "Layers/xrRenderGLES/glesState.h"
 #elif defined(USE_DX10) || defined(USE_DX11)
 #include "Layers/xrRenderDX10/dx10R_Backend_Runtime.h"
 #include "Layers/xrRenderDX10/StateManager/dx10State.h"
@@ -59,7 +62,7 @@ IC void CBackend::set_xform_project(const Fmatrix& M) { xforms.set_P(M); }
 IC const Fmatrix& CBackend::get_xform_world() { return xforms.get_W(); }
 IC const Fmatrix& CBackend::get_xform_view() { return xforms.get_V(); }
 IC const Fmatrix& CBackend::get_xform_project() { return xforms.get_P(); }
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
 IC GLuint CBackend::get_RT(u32 ID)
 #else
 IC ID3DRenderTargetView* CBackend::get_RT(u32 ID)
@@ -70,7 +73,7 @@ IC ID3DRenderTargetView* CBackend::get_RT(u32 ID)
     return pRT[ID];
 }
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
 IC GLuint CBackend::get_ZB()
 #else
 IC ID3DDepthStencilView* CBackend::get_ZB()

@@ -6,6 +6,8 @@
 
 #if defined(USE_OGL)
 #include "Layers/xrRenderGL/glr_constants_cache.h"
+#elif defined(USE_GLES)
+#include "Layers/xrRenderGLES/glesr_constants_cache.h"
 #elif defined(USE_DX10) || defined(USE_DX11)
 #include "Layers/xrRenderDX10/dx10r_constants_cache.h"
 #else //	USE_DX10

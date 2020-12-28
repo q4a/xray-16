@@ -283,7 +283,7 @@ public:
             return;
         int val = *value;
         clamp(val, 1, 16);
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
         // TODO: OGL: Implement aniso filtering.
 #elif defined(USE_DX10) || defined(USE_DX11)
         SSManager.SetMaxAnisotropy(val);
@@ -312,7 +312,7 @@ public:
         if (nullptr == HW.pDevice)
             return;
 
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
             // TODO: OGL: Implement mipmap bias control.
 #elif defined(USE_DX10) || defined(USE_DX11)
         SSManager.SetMipLODBias(*value);
@@ -476,7 +476,7 @@ public:
     virtual void Execute(LPCSTR /*args*/)
     {
         // TODO: OGL: Implement memory usage statistics.
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
         u32 m_base = 0;
         u32 c_base = 0;
         u32 m_lmaps = 0;

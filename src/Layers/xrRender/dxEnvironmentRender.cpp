@@ -175,7 +175,7 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
     }
 
     //. Setup skybox textures, somewhat ugly
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint e0 = mixRen.sky_r_textures[0].second->surface_get();
     GLuint e1 = mixRen.sky_r_textures[1].second->surface_get();
 
@@ -353,7 +353,7 @@ void dxEnvironmentRender::OnDeviceCreate()
 
 void dxEnvironmentRender::OnDeviceDestroy()
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     tsky0->surface_set(GL_TEXTURE_CUBE_MAP, 0);
     tsky1->surface_set(GL_TEXTURE_CUBE_MAP, 0);
 #else

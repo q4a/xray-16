@@ -96,7 +96,7 @@ public:
 #endif
 private:
     // Render-targets
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint pFB;
     GLuint pRT[4];
     GLuint pZB;
@@ -117,7 +117,7 @@ private:
 
     // Shaders/State
     ID3DState* state;
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint ps;
     GLuint vs;
     GLuint gs;
@@ -170,7 +170,7 @@ private:
     CTexture* textures_ps[CTexture::mtMaxPixelShaderTextures]; // stages
     //CTexture* textures_vs[5]; // dmap + 4 vs
     CTexture* textures_vs[CTexture::mtMaxVertexShaderTextures]; // 4 vs
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     CTexture* textures_gs[CTexture::mtMaxGeometryShaderTextures]; // 4 vs
 #	ifdef USE_DX11
     CTexture* textures_hs[CTexture::mtMaxHullShaderTextures]; // 4 vs
@@ -241,7 +241,7 @@ public:
 #if defined(USE_DX10) || defined(USE_DX11)
     IC void get_ConstantDirect(const shared_str& n, size_t DataSize, void** pVData, void** pGData, void** pPData);
 #else // USE_DX10
-#ifndef USE_OGL
+#if !defined(USE_OGL) && !defined(USE_GLES)
     R_constant_array& get_ConstantCache_Vertex() { return constants.a_vertex; }
     R_constant_array& get_ConstantCache_Pixel() { return constants.a_pixel; }
 #endif // USE_OGL
@@ -256,7 +256,7 @@ public:
     IC const Fmatrix& get_xform_view();
     IC const Fmatrix& get_xform_project();
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     IC void set_FB(GLuint FB = 0);
     IC void set_RT(GLuint RT, u32 ID = 0);
     IC void set_ZB(GLuint ZB);
@@ -276,6 +276,8 @@ public:
     void set_Textures(STextureList* T);
     void set_Textures(ref_texture_list& T) { set_Textures(&*T); }
 
+	IC void reset_Texture(int _last_ps);
+
 #ifdef _EDITOR
     IC	void						set_Matrices(SMatrixList* M);
     IC	void						set_Matrices(ref_matrix_list& M) { set_Matrices(&*M); }
@@ -292,14 +294,14 @@ public:
 
     ICF void set_Format(SDeclaration* _decl);
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     ICF void set_PS(GLuint _ps, LPCSTR _n = 0);
 #else
     ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = nullptr);
 #endif // USE_OGL
     ICF void set_PS(ref_ps& _ps) { set_PS(_ps->sh, _ps->cName.c_str()); }
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
 #ifdef USE_OGL
     ICF void set_GS(GLuint _gs, LPCSTR _n = 0);
 #else
@@ -332,7 +334,7 @@ public:
 
 protected: //	In DX10 we need input shader signature which is stored in ref_vs
 #endif // USE_DX10
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     ICF void set_VS(GLuint _vs, LPCSTR _n = 0);
 #else
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);

@@ -32,7 +32,7 @@ void CBlender_Compile::r_Pass(std::pair<cpcstr, cpcstr> _vs, LPCSTR _ps, bool bF
     SVS* vs = RImplementation.Resources->_CreateVS(_vs.first, _vs.second, flags);
     dest.ps = ps;
     dest.vs = vs;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
     SGS* gs = RImplementation.Resources->_CreateGS("null");
     dest.gs = gs;
 #ifdef USE_DX11

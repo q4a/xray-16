@@ -22,7 +22,7 @@ public:
     bool used_as_depth() const;
 
 public:
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     GLuint pRT;
     GLuint pZRT;
     GLenum target;

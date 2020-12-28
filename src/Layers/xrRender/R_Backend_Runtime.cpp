@@ -402,21 +402,22 @@ void CBackend::set_Textures(STextureList* _T)
             continue;
 
         textures_ps[_last_ps] = nullptr;
-#if defined(USE_OGL)
-        CHK_GL(glActiveTexture(GL_TEXTURE0 + _last_ps));
-        CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
-        if (RImplementation.o.dx10_msaa)
-            CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
-        CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
-        CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-#elif defined(USE_DX10) || defined(USE_DX11)
-        // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
-        // HW.pDevice->PSSetShaderResources(_last_ps, 1, &pRes);
-        SRVSManager.SetPSResource(_last_ps, pRes);
-#else // USE_DX10
-        CHK_DX(HW.pDevice->SetTexture(_last_ps, NULL));
-#endif // USE_DX10
+        reset_Texture(_last_ps);
+//#if defined(USE_OGL)
+//        CHK_GL(glActiveTexture(GL_TEXTURE0 + _last_ps));
+//        CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+//        if (RImplementation.o.dx10_msaa)
+//            CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+//        CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
+//        CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//#elif defined(USE_DX10) || defined(USE_DX11)
+//        // TODO: DX10: Optimise: set all resources at once
+//        ID3DShaderResourceView* pRes = 0;
+//        // HW.pDevice->PSSetShaderResources(_last_ps, 1, &pRes);
+//        SRVSManager.SetPSResource(_last_ps, pRes);
+//#else // USE_DX10
+//        CHK_DX(HW.pDevice->SetTexture(_last_ps, NULL));
+//#endif // USE_DX10
     }
     // clear remaining stages (VS)
     for (++_last_vs; _last_vs < CTexture::mtMaxVertexShaderTextures; _last_vs++)
@@ -425,21 +426,22 @@ void CBackend::set_Textures(STextureList* _T)
             continue;
 
         textures_vs[_last_vs] = nullptr;
-#if defined(USE_OGL)
-        CHK_GL(glActiveTexture(GL_TEXTURE0 + CTexture::rstVertex + _last_vs));
-        CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
-        if (RImplementation.o.dx10_msaa)
-            CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
-        CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
-        CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-#elif defined(USE_DX10) || defined(USE_DX11)
-        // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
-        // HW.pDevice->VSSetShaderResources(_last_vs, 1, &pRes);
-        SRVSManager.SetVSResource(_last_vs, pRes);
-#else // USE_DX10
-        CHK_DX(HW.pDevice->SetTexture(_last_vs + CTexture::rstVertex, NULL));
-#endif // USE_DX10
+		reset_Texture(CTexture::rstVertex + _last_vs);
+//#if defined(USE_OGL)
+//        CHK_GL(glActiveTexture(GL_TEXTURE0 + CTexture::rstVertex + _last_vs));
+//        CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+//        if (RImplementation.o.dx10_msaa)
+//            CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+//        CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
+//        CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//#elif defined(USE_DX10) || defined(USE_DX11)
+//        // TODO: DX10: Optimise: set all resources at once
+//        ID3DShaderResourceView* pRes = 0;
+//        // HW.pDevice->VSSetShaderResources(_last_vs, 1, &pRes);
+//        SRVSManager.SetVSResource(_last_vs, pRes);
+//#else // USE_DX10
+//        CHK_DX(HW.pDevice->SetTexture(_last_vs + CTexture::rstVertex, NULL));
+//#endif // USE_DX10
     }
 
 #if defined(USE_DX10) || defined(USE_DX11)
@@ -502,7 +504,7 @@ void CBackend::set_Textures(STextureList* _T) {}
 
 void CBackend::SetupStates()
 {
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_GLES)
     // TODO: OGL: Implement SetupStates().
 #elif defined(USE_DX10) || defined(USE_DX11)
     SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);

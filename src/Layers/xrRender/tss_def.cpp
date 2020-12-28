@@ -5,12 +5,14 @@
 
 #ifdef USE_OGL
 #include "../xrRenderGL/glState.h"
+#elif USE_GLES
+#include "../xrRenderGLES/glesState.h"
 #endif
 
 // TODO: DX10: Implement equivalent for SimulatorStates::record for DX10
 void SimulatorStates::record(ID3DState*& state)
 {
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_GLES)
     state = ID3DState::Create();
     for (SimulatorStates::State& S : States)
     {

@@ -65,7 +65,7 @@ ref_constant R_constant_table::get(const shared_str& S, u16 type /*= u16(-1)*/)
     return nullptr;
 }
 
-#if !defined(USE_DX10) && !defined(USE_DX11) && !defined(USE_OGL)
+#if !defined(USE_DX10) && !defined(USE_DX11) && !defined(USE_OGL) && !defined(USE_GLES)
 BOOL R_constant_table::parse(void* _desc, u32 destination)
 {
     D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
@@ -216,7 +216,7 @@ void R_constant_table::merge(R_constant_table* T)
             C->type = src->type;
             C->ps = src->ps;
             C->vs = src->vs;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_GLES)
             C->gs = src->gs;
 #ifdef USE_DX11
             C->hs = src->hs;
