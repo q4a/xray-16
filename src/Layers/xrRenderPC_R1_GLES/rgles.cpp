@@ -665,3 +665,9 @@ void CRender::DumpStatistics(IGameFont& font, IPerformanceAlert* alert)
     HOM.DumpStatistics(font, alert);
     Sectors_xrc.DumpStatistics(font, alert);
 }
+
+void CRender::ObtainRequiredWindowFlags(u32& windowFlags)
+{
+    windowFlags |= SDL_WINDOW_OPENGL;
+    HW.SetPrimaryAttributes();
+}

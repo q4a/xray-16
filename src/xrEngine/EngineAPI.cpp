@@ -91,6 +91,7 @@ void CEngineAPI::SelectRenderer()
         }
     };
 
+    select(gles_library, rsR2, 6, rsRGL);
     select(gl_library, rsRGL, 5, rsR4);
 
 #if defined(WINDOWS)
