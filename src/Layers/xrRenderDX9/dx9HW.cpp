@@ -401,6 +401,7 @@ std::pair<u32, u32> CHW::GetSurfaceSize() const
 
 void CHW::Present()
 {
+    CHK_DX(HW.pDevice->EndScene());
     pDevice->Present(nullptr, nullptr, nullptr, nullptr);
     CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;
 }
