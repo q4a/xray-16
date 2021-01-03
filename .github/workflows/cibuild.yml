@@ -35,14 +35,15 @@ jobs:
           make -j $core_count package
           file openxray_1.6.02_*.deb
     - name: Prepare artifacts
+      id: linux-arm-vars
       run: |
         if [ "${{ matrix.Platform }}" = "aarch64" ]; then
-        echo ::set-env name=Build_type::arm64
+        echo ::set-output name=Build_type::arm64
         elif [ "${{ matrix.Platform }}" = "armv7" ]; then
-        echo ::set-env name=Build_type::armhf
+        echo ::set-output name=Build_type::armhf
         fi
     - name: Upload OpenXRay artifact
       uses: actions/upload-artifact@v1
       with:
-        name: openxray_1.6.02_${{ matrix.Configuration }}_${{ env.Build_type }}.deb
-        path: bin/openxray_1.6.02_${{ env.Build_type }}.deb
+        name: openxray_1.6.02_${{ matrix.Configuration }}_${{ steps.linux-arm-vars.outputs.Build_type }}.deb
+        path: bin/openxray_1.6.02_${{ steps.linux-arm-vars.outputs.Build_type }}.deb
