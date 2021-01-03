@@ -21,8 +21,8 @@ jobs:
     - name: Build
       uses: uraimo/run-on-arch-action@v2.0.8
       with:
-        architecture: ${{ matrix.Platform }}
-        distribution: ubuntu20.04
+        arch: ${{ matrix.Platform }}
+        distro: ubuntu20.04
         run: |
           cat /etc/apt/sources.list
           apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:ubuntu-toolchain-r/test
