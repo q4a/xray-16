@@ -28,6 +28,11 @@ jobs:
           apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:ubuntu-toolchain-r/test
           apt-get install -y libglew-dev libegl1-mesa-dev libgles2-mesa-dev libopenal-dev libtbb-dev libcrypto++-dev liblockfile-dev libfreeimage-dev libfreeimageplus-dev
           apt-get install -y gcc-9 g++-9 cmake liblua5.1-0-dev libssl-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libjpeg-dev libncurses5-dev libsdl2-dev
+          if [ "${{ matrix.Platform }}" = "armv7" ]; then
+            wget --no-check-certificate https://apt.kitware.com/ubuntu/pool/main/c/cmake/cmake_3.19.1-0kitware1ubuntu20.04.1_armhf.deb
+            wget --no-check-certificate https://apt.kitware.com/ubuntu/pool/main/c/cmake/cmake-data_3.19.1-0kitware1ubuntu20.04.1_all.deb
+            dpkg -i *.deb
+          fi
           export CC=gcc-9 && export CXX=g++-9 && ${CXX} --version
           export core_count=$(nproc || echo 4) && echo core_count = $core_count
           mkdir bin && cd bin
