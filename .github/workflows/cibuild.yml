@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Debug, Mixed, Release]
+        Configuration: [Debug, Mixed, Release, Release Master Gold]
         Platform: [x64, x86]
     steps:
     - uses: actions/checkout@v2
@@ -26,12 +26,12 @@ jobs:
         nuget restore src\engine.sln
     - name: MSBuild
       working-directory: src
-      run: msbuild /p:Configuration=${{ matrix.Configuration }} /p:Platform=${{ matrix.Platform }} engine.sln 
+      run: msbuild /p:Configuration="${{ matrix.Configuration }}" /p:Platform="${{ matrix.Platform }}" engine.sln 
     - name: Prepare artifacts
       id: windows-vars
       shell: cmd
       run: |
-        set CONFIGURATION=${{ matrix.Configuration }}
+        set CONFIGURATION="${{ matrix.Configuration }}"
         set PLATFORM=${{ matrix.Platform }}
         echo ::set-output name=Build_type::%CONFIGURATION:~0,1%%PLATFORM%
         xr_pack_build.cmd
