@@ -6,6 +6,16 @@
 #include "xrCore/_vector3d.h"
 #include "xrCommon/xr_vector.h" // DEFINE_VECTOR
 
+#ifdef XRAY_STATIC_BUILD
+#   define XRSOUND_API
+#else
+#   ifdef XRSOUND_EXPORTS
+#      define XRSOUND_API XR_EXPORT
+#   else
+#      define XRSOUND_API XR_IMPORT
+#   endif
+#endif
+
 constexpr pcstr SNDENV_FILENAME = "sEnvironment.xr";
 #define OGG_COMMENT_VERSION 0x0003
 

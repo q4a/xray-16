@@ -6,6 +6,16 @@
 #include "xrCore/_vector3d.h"
 #include "xrCommon/xr_vector.h"
 
+#ifdef XRAY_STATIC_BUILD
+#   define XRCDB_API
+#else
+#   ifdef XRCDB_EXPORTS
+#      define XRCDB_API XR_EXPORT
+#   else
+#      define XRCDB_API XR_IMPORT
+#   endif
+#endif
+
 // forward declarations
 class CFrustum;
 namespace Opcode

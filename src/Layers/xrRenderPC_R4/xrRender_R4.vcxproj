@@ -26,7 +26,9 @@
       <PreprocessorDefinitions>_USRDLL;XRRENDER_R4_EXPORTS;USE_DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3dx9.lib;d3dx11.lib;dxguid.lib;d3dcompiler.lib;nvapi$(PlatformArchitecture).lib;amd_ags_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3dcompiler.lib;nvapi$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'!='Debug'">amd_ags_$(PlatformShortName)_2019_MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">amd_ags_$(PlatformShortName)_2019_MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(xrExternals)OpenAutomate\libraries;$(xrExternals)AGS_SDK\ags_lib\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(xrExternals)nvapi\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='x64'">$(xrExternals)nvapi\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -200,6 +202,7 @@
     <ClInclude Include="..\xrRender\blenders\blender_luminance.h" />
     <ClInclude Include="..\xrRender\blenders\blender_ssao.h" />
     <ClInclude Include="..\xrRender_R2\r2_rendertarget_wallmarks.h" />
+    <ClInclude Include="..\xrRender_R2\r2_R_sun_support.h" />
     <ClInclude Include="..\xrRender_R2\r2_types.h" />
     <ClInclude Include="..\xrRender_R2\SMAP_Allocator.h" />
     <ClInclude Include="ComputeShader.h" />
@@ -211,7 +214,6 @@
     <ClInclude Include="..\xrRender\light_smapvis.h" />
     <ClInclude Include="r4.h" />
     <ClInclude Include="r4_rendertarget.h" />
-    <ClInclude Include="r4_R_sun_support.h" />
     <ClInclude Include="R_Backend_LOD.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -330,6 +332,7 @@
     <ClCompile Include="..\xrRender\r__pixel_calculator.cpp" />
     <ClCompile Include="..\xrRender\r__screenshot.cpp" />
     <ClCompile Include="..\xrRender\r__sector.cpp" />
+    <ClCompile Include="..\xrRender\r__sector_detect.cpp" />
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp" />
     <ClCompile Include="..\xrRender\r__sync_point.cpp" />
     <ClCompile Include="..\xrRender\Shader.cpp" />
@@ -381,7 +384,7 @@
     <ClCompile Include="..\xrRender_R2\r2_R_calculate.cpp" />
     <ClCompile Include="..\xrRender_R2\r2_R_lights.cpp" />
     <ClCompile Include="..\xrRender_R2\r2_R_render.cpp" />
-    <ClCompile Include="..\xrRender_R2\r2_sector_detect.cpp" />
+    <ClCompile Include="..\xrRender_R2\r2_R_sun.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="CSCompiler.cpp" />
     <ClCompile Include="..\xrRender\blenders\dx11HDAOCSBlender.cpp" />
@@ -393,7 +396,6 @@
     <ClCompile Include="..\xrRender\light_vis.cpp" />
     <ClCompile Include="r4_rendertarget_build_textures.cpp" />
     <ClCompile Include="r4_rendertarget_u_set_rt.cpp" />
-    <ClCompile Include="r4_R_sun.cpp" />
     <ClCompile Include="r2_test_hw.cpp" />
     <ClCompile Include="r4_rendertarget_accum_direct.cpp" />
     <ClCompile Include="r4_rendertarget_accum_point.cpp" />
@@ -409,7 +411,6 @@
     <ClCompile Include="r4_rendertarget_phase_smap_D.cpp" />
     <ClCompile Include="r4_rendertarget_phase_ssao.cpp" />
     <ClCompile Include="r4_R_rain.cpp" />
-    <ClCompile Include="r4_R_sun_support.cpp" />
     <ClCompile Include="r4_shaders.cpp" />
     <ClCompile Include="R_Backend_LOD.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -457,14 +458,18 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\sdl2.redist.2.0.5\build\native\sdl2.redist.targets" Condition="Exists('..\..\packages\sdl2.redist.2.0.5\build\native\sdl2.redist.targets')" />
-    <Import Project="..\..\packages\sdl2.2.0.5\build\native\sdl2.targets" Condition="Exists('..\..\packages\sdl2.2.0.5\build\native\sdl2.targets')" />
+    <Import Project="..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets" Condition="Exists('..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" />
+    <Import Project="..\..\packages\sdl2.nuget.redist.2.0.14\build\native\sdl2.nuget.redist.targets" Condition="Exists('..\..\packages\sdl2.nuget.redist.2.0.14\build\native\sdl2.nuget.redist.targets')" />
+    <Import Project="..\..\packages\sdl2.nuget.2.0.14\build\native\sdl2.nuget.targets" Condition="Exists('..\..\packages\sdl2.nuget.2.0.14\build\native\sdl2.nuget.targets')" />
+    <Import Project="..\..\packages\directxmath.2021.1.11.2\build\native\directxmath.targets" Condition="Exists('..\..\packages\directxmath.2021.1.11.2\build\native\directxmath.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\sdl2.redist.2.0.5\build\native\sdl2.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\sdl2.redist.2.0.5\build\native\sdl2.redist.targets'))" />
-    <Error Condition="!Exists('..\..\packages\sdl2.2.0.5\build\native\sdl2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\sdl2.2.0.5\build\native\sdl2.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets'))" />
+    <Error Condition="!Exists('..\..\packages\sdl2.nuget.redist.2.0.14\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\sdl2.nuget.redist.2.0.14\build\native\sdl2.nuget.redist.targets'))" />
+    <Error Condition="!Exists('..\..\packages\sdl2.nuget.2.0.14\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\sdl2.nuget.2.0.14\build\native\sdl2.nuget.targets'))" />
+    <Error Condition="!Exists('..\..\packages\directxmath.2021.1.11.2\build\native\directxmath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\directxmath.2021.1.11.2\build\native\directxmath.targets'))" />
   </Target>
 </Project>

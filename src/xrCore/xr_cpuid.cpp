@@ -52,7 +52,7 @@ void nativeCpuId(int regs[4], int i)
 #ifndef XR_PLATFORM_WINDOWS
 #include <thread>
 
-void __cpuidex(int regs[4], int i, int j)
+void xr_cpuidex(int regs[4], int i, int j)
 {
     nativeCpuId(regs, i);
 }
@@ -76,6 +76,72 @@ u32 countSetBits(ULONG_PTR bitMask)
 }
 #endif
 
+void fillInAvailableCpus(processor_info* pinfo)
+{
+    // Calculate available processors
+#ifdef XR_PLATFORM_WINDOWS
+    ULONG_PTR pa_mask_save, sa_mask_stub = 0;
+    GetProcessAffinityMask(GetCurrentProcess(), &pa_mask_save, &sa_mask_stub);
+#elif defined(XR_PLATFORM_LINUX) || defined(XR_PLATFORM_FREEBSD)
+    u32 pa_mask_save = 0;
+    cpu_set_t my_set;
+    CPU_ZERO(&my_set);
+    pthread_getaffinity_np(pthread_self(), sizeof(cpu_set_t), &my_set);
+    pa_mask_save = CPU_COUNT(&my_set);
+#else
+#pragma TODO("No function to obtain process affinity")
+    u32 pa_mask_save = 0;
+#endif // XR_PLATFORM_WINDOWS
+
+    u32 processorCoreCount = 0;
+    u32 logicalProcessorCount = 0;
+
+#ifdef XR_PLATFORM_WINDOWS
+    DWORD returnedLength = 0;
+    GetLogicalProcessorInformation(nullptr, &returnedLength);
+
+    auto* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)xr_alloca(returnedLength);
+    GetLogicalProcessorInformation(buffer, &returnedLength);
+
+    u32 byteOffset = 0;
+    while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnedLength)
+    {
+        switch (buffer->Relationship)
+        {
+        case RelationProcessorCore:
+            processorCoreCount++;
+
+            // A hyperthreaded core supplies more than one logical processor.
+            logicalProcessorCount += countSetBits(buffer->ProcessorMask);
+            break;
+
+        default:
+            break;
+        }
+
+        byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+        buffer++;
+    }
+#elif defined(XR_PLATFORM_LINUX) || defined(XR_PLATFORM_FREEBSD)
+    processorCoreCount = sysconf(_SC_NPROCESSORS_ONLN);
+    logicalProcessorCount = std::thread::hardware_concurrency();
+#else
+#pragma TODO("No function to obtain processor's core count")
+    logicalProcessorCount = std::thread::hardware_concurrency();
+    processorCoreCount = logicalProcessorCount;
+#endif
+
+    if (logicalProcessorCount != processorCoreCount)
+        pinfo->features.set(static_cast<u32>(CpuFeature::HyperThreading), true);
+
+    // All logical processors
+    pinfo->n_threads = logicalProcessorCount;
+    pinfo->affinity_mask = pa_mask_save;
+    pinfo->n_cores = processorCoreCount;
+}
+
+
+#if defined(XR_ARCHITECTURE_X86) || defined(XR_ARCHITECTURE_X64)
 bool query_processor_info(processor_info* pinfo)
 {
     ZeroMemory(pinfo, sizeof(processor_info));
@@ -97,7 +163,11 @@ bool query_processor_info(processor_info* pinfo)
 
     for (int i = 0; i <= nIds; ++i)
     {
+#ifdef XR_PLATFORM_WINDOWS
         __cpuidex(cpui.data(), i, 0);
+#else
+        xr_cpuidex(cpui.data(), i, 0);
+#endif
         data.push_back(cpui);
     }
 
@@ -129,7 +199,11 @@ bool query_processor_info(processor_info* pinfo)
 
     for (int i = 0x80000000; i <= nExIds_; ++i)
     {
+#ifdef XR_PLATFORM_WINDOWS
         __cpuidex(cpui.data(), i, 0);
+#else
+        xr_cpuidex(cpui.data(), i, 0);
+#endif
         data.push_back(cpui);
     }
 
@@ -193,67 +267,74 @@ bool query_processor_info(processor_info* pinfo)
     pinfo->model = (cpui[0] >> 4) & 0xf;
     pinfo->stepping = cpui[0] & 0xf;
 
-    // Calculate available processors
-#ifdef XR_PLATFORM_WINDOWS
-    ULONG_PTR pa_mask_save, sa_mask_stub = 0;
-    GetProcessAffinityMask(GetCurrentProcess(), &pa_mask_save, &sa_mask_stub);
-#elif defined(XR_PLATFORM_LINUX) || defined(XR_PLATFORM_FREEBSD)
-    u32 pa_mask_save = 0;
-    cpu_set_t my_set;
-    CPU_ZERO(&my_set);
-    pthread_getaffinity_np(pthread_self(), sizeof(cpu_set_t), &my_set);
-    pa_mask_save = CPU_COUNT(&my_set);
-#else
-#pragma TODO("No function to obtain process affinity")
-    u32 pa_mask_save = 0;
-#endif // XR_PLATFORM_WINDOWS
-
-    u32 processorCoreCount = 0;
-    u32 logicalProcessorCount = 0;
-
-#ifdef XR_PLATFORM_WINDOWS
-    DWORD returnedLength = 0;
-    GetLogicalProcessorInformation(nullptr, &returnedLength);
-
-    auto* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)xr_alloca(returnedLength);
-    GetLogicalProcessorInformation(buffer, &returnedLength);
-
-    u32 byteOffset = 0;
-    while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnedLength)
-    {
-        switch (buffer->Relationship)
-        {
-            case RelationProcessorCore:
-                processorCoreCount++;
-
-                // A hyperthreaded core supplies more than one logical processor.
-                logicalProcessorCount += countSetBits(buffer->ProcessorMask);
-                break;
-
-            default:
-                break;
-        }
-
-        byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-        buffer++;
-    }
-#elif defined(XR_PLATFORM_LINUX) || defined(XR_PLATFORM_FREEBSD)
-    processorCoreCount = sysconf(_SC_NPROCESSORS_ONLN);
-    logicalProcessorCount = std::thread::hardware_concurrency();
-#else
-#pragma TODO("No function to obtain processor's core count")
-    logicalProcessorCount = std::thread::hardware_concurrency();
-    processorCoreCount = logicalProcessorCount;
-#endif
-
-    if (logicalProcessorCount != processorCoreCount)
-        pinfo->features.set(static_cast<u32>(CpuFeature::HyperThreading), true);
-
-    // All logical processors
-    pinfo->n_threads = logicalProcessorCount;
-    pinfo->affinity_mask = pa_mask_save;
-    pinfo->n_cores = processorCoreCount;
+    fillInAvailableCpus(pinfo);
 
     return pinfo->features.get() != 0;
 }
+
+#elif defined(XR_ARCHITECTURE_E2K)
+bool query_processor_info(processor_info* pinfo)
+{
+    *pinfo = {};
+
+    strcpy(pinfo->vendor, "MCST");
+    xr_sprintf(pinfo->modelName, "%s (%s)", __builtin_cpu_name(), __builtin_cpu_arch());
+
+#if defined(__MMX__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::MMX), true);
+#endif
+
+#if defined(__3dNOW__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::_3DNow), true);
+#endif
+
+#if defined(__SSE__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSE), true);
+#endif
+
+#if defined(__SSE2__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSE2), true);
+#endif
+
+#if defined(__SSE3__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSE3), true);
+#endif
+
+#if defined(__SSSE3__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSSE3), true);
+#endif
+
+#if defined(__SSE4_1__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSE41), true);
+#endif
+
+#if defined(__SSE4_2__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::SSE42), true);
+#endif
+
+#if defined(__AVX__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::AVX), true);
+#endif
+
+#if defined(__AVX2__)
+    pinfo->features.set(static_cast<u32>(CpuFeature::AVX2), true);
+#endif
+
+    fillInAvailableCpus(pinfo);
+
+    return true;
+}
+
+#elif defined(XR_ARCHITECTURE_ARM) || defined(XR_ARCHITECTURE_ARM64)
+bool query_processor_info(processor_info* pinfo)
+{
+    *pinfo = {};
+
+    fillInAvailableCpus(pinfo);
+
+    return true;
+}
+
+#endif
+
 #endif

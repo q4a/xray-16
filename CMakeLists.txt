@@ -13,7 +13,9 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Redirecting the default installation path /usr/local to /usr no need to use -DCMAKE_INSTALL_PREFIX =/usr
-set(CMAKE_INSTALL_PREFIX /usr)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "/usr")
+endif()
 
 # Installation paths
 include(GNUInstallDirs)
@@ -36,7 +38,20 @@ elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "e2k")
     set(PROJECT_PLATFORM_E2K TRUE)
 endif()
 
-option(USE_CRYPTOPP "Use Crypto++ Library (REQUIRED FOR MULTIPLAYER)" ON)
+if (NOT MASTER_GOLD)
+    if (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+        set(MASTER_GOLD ON CACHE BOOL "" FORCE)
+    else()
+        set(MASTER_GOLD OFF CACHE BOOL "" FORCE)
+    endif()
+endif()
+
+message(STATUS "MASTER_GOLD: ${MASTER_GOLD}")
+if (MASTER_GOLD)
+    add_definitions(-DMASTER_GOLD)
+endif()
+
+option(USE_CRYPTOPP "Use Crypto++ Library (REQUIRED FOR MULTIPLAYER)" OFF)
 
 # Memory allocator option
 set(MEMORY_ALLOCATOR "mimalloc" CACHE STRING "Use specific memory allocator (mimalloc/standard)")
@@ -211,7 +226,10 @@ execute_process(COMMAND git rev-parse --abbrev-ref HEAD
 
 message("git branch: " ${GIT_BRANCH})
 
-include_directories(${CMAKE_SOURCE_DIR}/Externals)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/Externals
+    ${CMAKE_SOURCE_DIR}/Externals/luabind
+)
 
 add_subdirectory(Externals)
 add_subdirectory(src)

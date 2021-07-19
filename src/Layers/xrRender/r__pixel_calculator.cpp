@@ -1,7 +1,13 @@
 #include "stdafx.h"
+
 #include "r__pixel_calculator.h"
-#define rt_dimensions 1024
 #include "Layers/xrRender/FBasicVisual.h"
+
+#if !defined(USE_OGL) // XXX: support pixel calculator on OpenGL
+#   include <DirectXMath.h>
+#endif
+
+static constexpr u32 rt_dimensions = 1024;
 
 void r_pixel_calculator::begin()
 {
@@ -29,19 +35,18 @@ void r_pixel_calculator::end()
     rt = nullptr;
 }
 
-// +X, -X, +Y, -Y, +Z, -Z
-static Fvector cmNorm[6] = {
-    {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-static Fvector cmDir[6] = {
-    {1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, -1.f}};
+//                                  +X,                -X,                +Y,                 -Y,                +Z,                -Z
+static Fvector cmNorm[6] = { { 0.f, 1.f, 0.f }, { 0.f, 1.f, 0.f }, { 0.f, 0.f, -1.f }, { 0.f, 0.f, 1.f }, { 0.f, 1.f, 0.f }, { 0.f, 1.f, 0.f } };
+static Fvector cmDir [6] = { { 1.f, 0.f, 0.f }, {-1.f, 0.f, 0.f }, { 0.f, 1.f,  0.f }, { 0.f,-1.f, 0.f }, { 0.f, 0.f, 1.f }, { 0.f, 0.f,-1.f } };
 
 r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
 {
-    // XXX: use glm instead of D3DXMath
 #ifdef USE_OGL
     VERIFY(!"Not implemented!");
     return {};
 #else
+    using namespace DirectX;
+
     r_aabb_ssa result = {0};
     float area = float(_sqr(rt_dimensions));
 
@@ -57,8 +62,10 @@ r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
         // camera - left-to-right
         mView.build_camera_dir(vFrom.invert(cmDir[face]).mul(100.f), cmDir[face], cmNorm[face]);
         aabb.xform(V->vis.box, mView);
-        D3DXMatrixOrthoOffCenterLH(
-            (D3DXMATRIX*)&mProject, aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
+
+        XMMATRIX project = XMMatrixOrthographicOffCenterLH(aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
+        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mProject), project);
+
         RCache.set_xform_world(Fidentity);
         RCache.set_xform_view(mView);
         RCache.set_xform_project(mProject);

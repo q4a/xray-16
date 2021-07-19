@@ -12,6 +12,16 @@
 #include <GameSpy/sake/sake.h>
 #include <GameSpy/sc/sc.h>
 
+#ifdef XRAY_STATIC_BUILD
+#   define XRGAMESPY_API
+#else
+#   ifdef XRGAMESPY_EXPORTS
+#      define XRGAMESPY_API XR_EXPORT
+#   else
+#      define XRGAMESPY_API XR_IMPORT
+#   endif
+#endif
+
 #include "xrGameSpy/xrGameSpy_MainDefs.h"
 #include "xrGameSpy/GameSpy_Available.h"
 #include "xrGameSpy/GameSpy_Browser.h"
@@ -24,6 +34,6 @@ XRGAMESPY_API const char* GetGameVersion();
 XRGAMESPY_API int GetGameDistribution();
 XRGAMESPY_API void GetGameID(int* GameID, int verID);
 
-// hack
+// XXX: remove hack
 #undef min
 #undef max

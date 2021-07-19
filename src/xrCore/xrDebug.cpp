@@ -22,16 +22,8 @@
 #endif
 
 #if defined(XR_PLATFORM_WINDOWS)
-#ifdef __BORLANDC__
-#include "d3d9.h"
-#include "d3dx9.h"
-#include "D3DX_Wrapper.h"
-#pragma comment(lib, "EToolsB.lib")
-#define USE_BUG_TRAP
-#else
 #define USE_BUG_TRAP
 static BOOL bException = FALSE;
-#endif
 #endif
 
 #ifndef USE_BUG_TRAP
@@ -446,30 +438,34 @@ void xrDebug::GatherInfo(char* assertionInfo, size_t bufferSize, const ErrorLoca
     int nptrs = backtrace(array, 20);     // get void*'s for all entries on the stack
     char **strings = backtrace_symbols(array, nptrs);
 
-    if(strings)
+    if (strings)
     {
+        size_t demangledBufSize = 0;
+        char* demangledName = nullptr;
         for (size_t i = 0; i < nptrs; i++)
         {
             char* functionName = strings[i];
-            char* demangledName = nullptr;
+
             Dl_info info;
 
             if (dladdr(array[i], &info))
             {
-                int status = -1;
-                demangledName = abi::__cxa_demangle(info.dli_sname, nullptr,
-                    nullptr, &status);
-                if (status == 0)
+                if (info.dli_sname)
                 {
-                    functionName = demangledName;
+                    int status = -1;
+                    demangledName = abi::__cxa_demangle(info.dli_sname, demangledName, &demangledBufSize, &status);
+                    if (status == 0)
+                    {
+                        functionName = demangledName;
+                    }
                 }
             }
             Log(functionName);
-    #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
+#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
             buffer += xr_sprintf(buffer, bufferSize, "%s\n", functionName);
-    #endif // USE_OWN_ERROR_MESSAGE_WINDOW
-            ::free(demangledName);
+#endif // USE_OWN_ERROR_MESSAGE_WINDOW
         }
+        ::free(demangledName);
     }
 #endif
     FlushLog();

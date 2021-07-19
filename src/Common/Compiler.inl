@@ -66,6 +66,30 @@
 #define XR_NOEXCEPT_OP(x) noexcept(x)
 #endif
 
+#if defined(MASTER_GOLD)
+//  release master gold
+#   if defined(_CPPUNWIND)
+//#       error Please disable exceptions... // XXX: temporary fix
+#   endif
+#   define XRAY_EXCEPTIONS 0
+#   define LUABIND_NO_EXCEPTIONS
+#else
+//  release, debug or mixed
+#   if !defined(_CPPUNWIND)
+#       error Please enable exceptions...
+#   endif
+#   define XRAY_EXCEPTIONS 1
+#   define LUABIND_FORCE_ENABLE_EXCEPTIONS // XXX: add this to luabind, because it automatically defines LUABIND_NO_EXCEPTIONS when NDEBUG is defined
+#endif
+
+#ifndef _MT
+#error Please enable multi-threaded library...
+#endif
+
+#if !defined(DEBUG) && (defined(_DEBUG) || defined(MIXED))
+#define DEBUG
+#endif
+
 // We use xr_* instead of defining e.g. strupr => _strupr, since the macro definition could
 // come before the std. header file declaring it, and thereby renaming that one too.
 #ifdef _MSC_VER
