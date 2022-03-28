@@ -149,7 +149,7 @@ jobs:
           export CXX=g++-9
           ${CXX} --version
           export core_count=$(nproc || echo 4) && echo core_count = $core_count
-          mkdir bin && cd bin
+          cd bin
           CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
           make -j $core_count package
           file openxray_1.6.02_*.deb
