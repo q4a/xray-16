@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Debug, Mixed, Release, Release Master Gold]
-        Platform: [x64, x86]
+        Configuration: [Debug]#, Mixed, Release, Release Master Gold]
+        Platform: [x64]#, x86]
     steps:
     - uses: actions/checkout@v2
       with:
