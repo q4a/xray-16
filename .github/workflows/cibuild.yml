@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Debug]#, Mixed, Release, Release Master Gold]
+        Configuration: [Mixed]#[Debug, Mixed, Release, Release Master Gold]
         Platform: [x64]#, x86]
     steps:
     - uses: actions/checkout@v2
@@ -143,7 +143,7 @@ jobs:
             dpkg -i cmake*.deb
           fi
           apt-get install -q -y libglew-dev libegl1-mesa-dev libgles2-mesa-dev libopenal-dev libcrypto++-dev libjpeg-dev
-          apt-get install -q -y gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
+          apt-get install -q -y make gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
         run: |
           export CC=gcc-9
           export CXX=g++-9
