@@ -60,8 +60,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configuration: [Debug, Release]
-        Platform: [x64, x86]
+        configuration: [Release]#Debug, 
+        Platform: [x64]#, x86
     steps:
     - uses: actions/checkout@v2
       with:
@@ -98,6 +98,69 @@ jobs:
         echo ::set-output name=Build_type::amd64
         elif [ "${{ matrix.Platform }}" = "x86" ]; then
         echo ::set-output name=Build_type::i386
+        fi
+    - name: Upload OpenXRay artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: openxray_1.6.02_${{ matrix.Configuration }}_${{ steps.linux-vars.outputs.Build_type }}.deb
+        path: bin/openxray_1.6.02_${{ steps.linux-vars.outputs.Build_type }}.deb
+
+  build-linux-arm:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+        Platform: [aarch64, armv7]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup
+      run: |
+        git submodule update --init --recursive
+        git submodule deinit Externals/cryptopp
+        mkdir bin
+    - name: Build with docker
+      uses: uraimo/run-on-arch-action@v2.1.2
+      with:
+        arch: ${{ matrix.Platform }}
+        distro: ubuntu20.04
+        # GitHub token used for caching Docker images in project's package registry
+        githubToken: ${{ github.token }}
+        # Mount the bin directory as /artifacts in the container
+        dockerRunArgs: |
+          --volume "${PWD}/bin:/artifacts"
+        # Install dependencies in the container. They will be cached
+        install: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -q -y
+          # Install cmake >=3.18 to fix for cmake bug on qemu+armhf: https://gitlab.kitware.com/cmake/cmake/-/issues/20568
+          if [ "${{ matrix.platform }}" = "armv7" ]; then
+            apt-get install -q -y gpg wget
+            wget --no-check-certificate https://apt.kitware.com/ubuntu/pool/main/c/cmake/cmake_3.20.5-0kitware1ubuntu20.04.1_armhf.deb
+            wget --no-check-certificate https://apt.kitware.com/ubuntu/pool/main/c/cmake/cmake-data_3.20.5-0kitware1ubuntu20.04.1_all.deb
+            dpkg -i cmake*.deb
+          fi
+          apt-get install -q -y libglew-dev libegl1-mesa-dev libgles2-mesa-dev libopenal-dev libcrypto++-dev libjpeg-dev
+          apt-get install -q -y gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
+        run: |
+          export CC=gcc-9
+          export CXX=g++-9
+          ${CXX} --version
+          export core_count=$(nproc || echo 4) && echo core_count = $core_count
+          mkdir bin && cd bin
+          CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          make -j $core_count package
+          file openxray_1.6.02_*.deb
+          cp openxray_1.6.02_*.deb /artifacts && ls -la /artifacts
+    - name: Prepare artifacts
+      id: linux-vars
+      run: |
+        if [ "${{ matrix.Platform }}" = "aarch64" ]; then
+          echo ::set-output name=Build_type::arm64
+        elif [ "${{ matrix.Platform }}" = "armv7" ]; then
+          echo ::set-output name=Build_type::armhf
         fi
     - name: Upload OpenXRay artifact
       uses: actions/upload-artifact@v2
