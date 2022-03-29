@@ -60,8 +60,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configuration: [Release]#Debug, 
-        Platform: [aarch64, armv7, x64]#, x86
+        configuration: [Debug, Release]
+        Platform: [aarch64, armv7, x64, x86]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -134,9 +134,13 @@ jobs:
       id: linux-vars
       run: |
         if [ "${{ matrix.Platform }}" = "x64" ]; then
-        echo ::set-output name=Build_type::amd64
+          echo ::set-output name=Build_type::amd64
         elif [ "${{ matrix.Platform }}" = "x86" ]; then
-        echo ::set-output name=Build_type::i386
+          echo ::set-output name=Build_type::i386
+        elif [ "${{ matrix.Platform }}" = "aarch64" ]; then
+          echo ::set-output name=Build_type::arm64
+        elif [ "${{ matrix.Platform }}" = "armv7" ]; then
+          echo ::set-output name=Build_type::armhf
         fi
     - name: Upload OpenXRay artifact
       uses: actions/upload-artifact@v2
