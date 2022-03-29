@@ -116,13 +116,16 @@ jobs:
           apt-get install -q -y libglew-dev libegl1-mesa-dev libgles2-mesa-dev libopenal-dev libcrypto++-dev libjpeg-dev
           apt-get install -q -y dpkg-dev make gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
         run: |
+          apt-get install -q -y ninja-build
           export CC=gcc-9
           export CXX=g++-9
           ${CXX} --version
-          export core_count=$(nproc || echo 4) && echo core_count = $core_count
+          #export core_count=$(nproc || echo 4) && echo core_count = $core_count
           mkdir bin && cd bin
-          CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
-          make -j $core_count package
+          #CFLAGS="-w" CXXFLAGS="-w" cmake -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          #make -j $core_count package
+          CFLAGS="-w" CXXFLAGS="-w" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          ninja package
           file openxray_1.6.02_*.deb
 
     - name: Prepare artifacts
