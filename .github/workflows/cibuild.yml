@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Mixed]#[Debug, Mixed, Release, Release Master Gold]
-        Platform: [x64]#, x86]
+        Configuration: [Debug, Mixed, Release, Release Master Gold]
+        Platform: [x64, x86]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -94,8 +94,8 @@ jobs:
         make -j $core_count package
         file openxray_1.6.02_*.deb
 
-    - name: Build armhf/arm64 in docker
-      if: matrix.platform == 'armv7' || matrix.platform == 'aarch64'
+    - name: Build arm64/armhf in docker
+      if: matrix.Platform == 'aarch64' || matrix.Platform == 'armv7'
       uses: uraimo/run-on-arch-action@v2.1.2
       with:
         arch: ${{ matrix.Platform }}
@@ -121,13 +121,8 @@ jobs:
           ${CXX} --version
           export core_count=$(nproc || echo 4) && echo core_count = $core_count
           mkdir bin && cd bin
-          #CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
-          #make -j $core_count package
-          if [ "${{ matrix.Platform }}" = "aarch64" ]; then
-            ls -la > openxray_1.6.02_arm64.deb
-          elif [ "${{ matrix.Platform }}" = "armv7" ]; then
-            ls -la > openxray_1.6.02_armhf.deb
-          fi
+          CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          make -j $core_count package
           file openxray_1.6.02_*.deb
 
     - name: Prepare artifacts
