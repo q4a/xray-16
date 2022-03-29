@@ -120,7 +120,7 @@ jobs:
       run: |
         git submodule update --init --recursive
         git submodule deinit Externals/cryptopp
-        mkdir bin
+        mkdir bin && touch bin/this_is_host_bin
     - name: Build with docker
       uses: uraimo/run-on-arch-action@v2.1.2
       with:
@@ -149,9 +149,14 @@ jobs:
           export CXX=g++-9
           ${CXX} --version
           export core_count=$(nproc || echo 4) && echo core_count = $core_count
-          cd bin
-          CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
-          make -j $core_count package
+          cd bin && ls -la
+          #CFLAGS="-w" CXXFLAGS="-w" cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          #make -j $core_count package
+          if [ "${{ matrix.Platform }}" = "aarch64" ]; then
+            ls -la > openxray_1.6.02_arm64.deb
+          elif [ "${{ matrix.Platform }}" = "armv7" ]; then
+            ls -la > openxray_1.6.02_armv7.deb
+          fi
           file openxray_1.6.02_*.deb
           cp openxray_1.6.02_*.deb /artifacts && ls -la /artifacts
     - name: Prepare artifacts
