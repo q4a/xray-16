@@ -155,7 +155,7 @@ jobs:
           if [ "${{ matrix.Platform }}" = "aarch64" ]; then
             ls -la > openxray_1.6.02_arm64.deb
           elif [ "${{ matrix.Platform }}" = "armv7" ]; then
-            ls -la > openxray_1.6.02_armv7.deb
+            ls -la > openxray_1.6.02_armhf.deb
           fi
           file openxray_1.6.02_*.deb
     - name: Prepare artifacts
