@@ -143,7 +143,7 @@ jobs:
             dpkg -i cmake*.deb
           fi
           apt-get install -q -y libglew-dev libegl1-mesa-dev libgles2-mesa-dev libopenal-dev libcrypto++-dev libjpeg-dev
-          apt-get install -q -y make gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
+          apt-get install -q -y dpkg-dev make gcc-9 g++-9 cmake liblua5.1-0-dev libogg-dev libtheora-dev libvorbis-dev liblzo2-dev libncurses5-dev libsdl2-dev
         run: |
           export CC=gcc-9
           export CXX=g++-9
@@ -158,7 +158,6 @@ jobs:
             ls -la > openxray_1.6.02_armv7.deb
           fi
           file openxray_1.6.02_*.deb
-          cp openxray_1.6.02_*.deb /artifacts && ls -la /artifacts
     - name: Prepare artifacts
       id: linux-vars
       run: |
