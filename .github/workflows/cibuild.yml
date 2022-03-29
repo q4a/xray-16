@@ -61,7 +61,7 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [Release]#Debug, 
-        Platform: [x64]#, x86
+        Platform: [aarch64, armv7, x64]#, x86
     steps:
     - uses: actions/checkout@v2
       with:
