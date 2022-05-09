@@ -18,6 +18,7 @@ constexpr pcstr GET_RENDERER_MODULE_FUNC = "GetRendererModule";
 
 constexpr pcstr r1_library     = "xrRender_R1";
 constexpr pcstr gl_library     = "xrRender_GL";
+constexpr pcstr glr1_library   = "xrRender_GLR1";
 
 constexpr pcstr RENDER_LIBRARIES[] =
 {
@@ -26,7 +27,8 @@ constexpr pcstr RENDER_LIBRARIES[] =
     "xrRender_R2",
     "xrRender_R4",
 #endif
-    gl_library
+    gl_library,
+    glr1_library
 };
 
 static bool r2_available = false;
@@ -206,7 +208,7 @@ void CEngineAPI::CreateRendererList()
 #if defined(XR_PLATFORM_WINDOWS)
         R_ASSERT2(loadLibrary(r1_library), "Dedicated server needs xrRender_R1 to work");
 #else
-        R_ASSERT2(loadLibrary(gl_library), "Dedicated server needs xrRender_GL to work");
+        R_ASSERT2(loadLibrary(glr1_library), "Dedicated server needs xrRender_GL to work");
 #endif
     }
     else
@@ -248,7 +250,7 @@ void CEngineAPI::CreateRendererList()
 #if defined(XR_PLATFORM_WINDOWS)
         static cpcstr renderForDedicated = r1_library;
 #else
-        static cpcstr renderForDedicated = gl_library;
+        static cpcstr renderForDedicated = glr1_library;
 #endif
         const auto it = std::find_if(renderers.begin(), renderers.end(), [](RendererDesc& desc)
         {
