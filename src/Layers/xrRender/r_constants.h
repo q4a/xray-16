@@ -76,7 +76,7 @@ struct ECORE_API R_constant_load
 
 #if defined(USE_DX9) || defined(USE_DX11)
     R_constant_load() : index(u16(-1)), cls(u16(-1)) {};
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint location;
     GLuint program;
 
@@ -89,7 +89,7 @@ struct ECORE_API R_constant_load
     {
 #if defined(USE_DX9) || defined(USE_DX11)
         return (index == C.index) && (cls == C.cls);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         return (index == C.index) && (cls == C.cls) && (location == C.location) && (program == C.program);
 #else
 #   error No graphics API selected or enabled!
@@ -105,7 +105,7 @@ struct ECORE_API R_constant : public xr_resource
 
     R_constant_load ps;
     R_constant_load vs;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     R_constant_load gs;
 #   if defined(USE_DX11)
     R_constant_load hs;
@@ -127,7 +127,7 @@ struct ECORE_API R_constant : public xr_resource
         case RC_dest_vertex: return vs;
         case RC_dest_pixel: return ps;
         case RC_dest_sampler: return samp;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
         case RC_dest_geometry: return gs;
 #   if defined(USE_DX11)
         case RC_dest_hull: return hs;

@@ -59,6 +59,9 @@ using ds_type = ID3D11DomainShader*;
 using vs_type = GLuint;
 using ps_type = GLuint;
 using gs_type = GLuint;
+#elif defined(USE_OGLR1)
+using vs_type = GLuint;
+using ps_type = GLuint;
 #else
 #   error No graphics API selected or enabled!
 #endif
@@ -98,7 +101,7 @@ struct mapNormalPS : public xr_fixed_map<ps_type, mapNormalAdvStages>
 {
     float ssa;
 };
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
 struct mapNormalPS : public xr_fixed_map<ps_type, mapNormalCS>
 {
     float ssa;
@@ -108,7 +111,7 @@ struct mapNormalPS : public xr_fixed_map<ps_type, mapNormalCS>
 #endif // !USE_DX9 && !USE_OGL
 
 
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
 struct mapNormalVS : public xr_fixed_map<vs_type, mapNormalPS> {};
 #elif defined(USE_DX11) || defined(USE_OGL)
 struct mapNormalGS : public xr_fixed_map<gs_type, mapNormalPS>
@@ -159,7 +162,7 @@ struct mapMatrixPS : public xr_fixed_map<ps_type, mapMatrixAdvStages>
 {
     float ssa;
 };
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
 struct mapMatrixPS : public xr_fixed_map<ps_type, mapMatrixCS>
 {
     float ssa;
@@ -169,7 +172,7 @@ struct mapMatrixPS : public xr_fixed_map<ps_type, mapMatrixCS>
 #endif // !USE_DX9 && !USE_OGL
 
 
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
 struct mapMatrixVS : public xr_fixed_map<vs_type, mapMatrixPS> {};
 #elif defined(USE_DX11) || defined(USE_OGL)
 struct mapMatrixGS : public xr_fixed_map<gs_type, mapMatrixPS>

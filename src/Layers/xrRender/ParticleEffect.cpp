@@ -52,7 +52,7 @@ static void ApplyTexgen(const Fmatrix& mVP)
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f
     };
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
     Fmatrix mTexelAdjust =
     {
         0.5f, 0.0f, 0.0f, 0.0f,

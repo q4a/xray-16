@@ -192,7 +192,7 @@ void CRender::render_menu()
     pv++;
     pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
     pv++;
     pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
@@ -507,7 +507,7 @@ void CRender::Render()
         RCache.set_xform_project(Device.mProject);
         RCache.set_xform_view(Device.mView);
         // Stencil - write 0x1 at pixel pos -
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
         RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff,
             D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 #elif defined(USE_DX11) || defined(USE_OGL)

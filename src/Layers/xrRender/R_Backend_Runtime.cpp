@@ -16,7 +16,7 @@ void CBackend::OnFrameEnd()
 {
     if (!GEnv.isDedicatedServer)
     {
-#if !defined(USE_DX9) && !defined(USE_OGL)
+#if !defined(USE_DX9) && !defined(USE_OGL) && !defined(USE_OGLR1)
         HW.pContext->ClearState();
 #elif defined(USE_DX9)
         for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
@@ -36,7 +36,7 @@ void CBackend::OnFrameBegin()
     {
         PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
         Invalidate();
         // DX9 sets base rt and base zb by default
 #ifndef USE_OGL
@@ -180,7 +180,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     // Enable them
     u32 e_mask = (1 << count) - 1;
     CHK_DX(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask));	
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     // TODO: DX10: Implement in the corresponding vertex shaders
     // Use this to set up location, were shader setup code will get data
     // VERIFY(!"CBackend::set_ClipPlanes not implemented!");
@@ -202,7 +202,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
     {
 #if defined(USE_DX9)
         CHK_DX(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     // TODO: DX10: Implement in the corresponding vertex shaders
     // Use this to set up location, were shader setup code will get data
     // VERIFY(!"CBackend::set_ClipPlanes not implemented!");
@@ -401,11 +401,13 @@ void CBackend::set_Textures(STextureList* _T)
         ID3DShaderResourceView* pRes = 0;
         // HW.pDevice->PSSetShaderResources(_last_ps, 1, &pRes);
         SRVSManager.SetPSResource(_last_ps, pRes);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         CHK_GL(glActiveTexture(GL_TEXTURE0 + _last_ps));
         CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+#ifndef USE_OGLR1
         if (RImplementation.o.dx10_msaa)
             CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+#endif
         CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
         CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 #else
@@ -426,11 +428,13 @@ void CBackend::set_Textures(STextureList* _T)
         ID3DShaderResourceView* pRes = 0;
         // HW.pDevice->VSSetShaderResources(_last_vs, 1, &pRes);
         SRVSManager.SetVSResource(_last_vs, pRes);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         CHK_GL(glActiveTexture(GL_TEXTURE0 + CTexture::rstVertex + _last_vs));
         CHK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+#ifndef USE_OGLR1
         if (RImplementation.o.dx10_msaa)
             CHK_GL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+#endif
         CHK_GL(glBindTexture(GL_TEXTURE_3D, 0));
         CHK_GL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 #else
@@ -538,7 +542,7 @@ void CBackend::SetupStates()
 #elif defined(USE_DX11)
     SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
     SSManager.SetMipLODBias(ps_r__tf_Mipbias);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     // TODO: OGL: Implement SetupStates().
 #else
 #   error No graphics API selected or enabled!

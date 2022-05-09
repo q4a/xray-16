@@ -85,7 +85,7 @@ static class cl_pos_decompress_params : public R_constant_setup
 #if defined(USE_DX9) || defined(USE_DX11)
         const float VertTan = -1.0f * tanf(deg2rad(Device.fFOV / 2.0f));
         const float HorzTan = -VertTan / Device.fASPECT;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         const float VertTan = tanf(deg2rad(Device.fFOV / 2.0f));
         const float HorzTan = VertTan / Device.fASPECT;
 #else
@@ -235,7 +235,7 @@ void CRender::create()
 #ifdef USE_DX9
     D3DFORMAT nullrt = (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
     o.nullrt = HW.support(nullrt, D3DRTYPE_SURFACE, D3DUSAGE_RENDERTARGET);
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     o.nullrt = false;
 #else
 #   error No graphics API selected or enabled!
@@ -306,7 +306,7 @@ void CRender::create()
     o.HW_smap_FETCH4 = FALSE;
 #ifdef USE_DX9
     o.HW_smap = HW.support(D3DFMT_D24X8, D3DRTYPE_TEXTURE, D3DUSAGE_DEPTHSTENCIL);
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     o.HW_smap = true;
 #else
 #   error No graphics API selected or enabled!
@@ -344,7 +344,7 @@ void CRender::create()
 #ifdef USE_DX9
     o.fp16_filter = HW.support(D3DFMT_A16B16G16R16F, D3DRTYPE_TEXTURE, D3DUSAGE_QUERY_FILTER);
     o.fp16_blend = HW.support(D3DFMT_A16B16G16R16F, D3DRTYPE_TEXTURE, D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING);
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     o.fp16_filter = true;
     o.fp16_blend = true;
 #else
@@ -390,7 +390,7 @@ void CRender::create()
     // nv-dbt
 #ifdef USE_DX9
     o.nvdbt = HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     o.nvdbt = false;
 #else
 #   error No graphics API selected or enabled!
@@ -464,7 +464,7 @@ void CRender::create()
     o.ssao_ultra = HW.ComputeShadersSupported && ssao_hdao_cs_shaders_exist();
 #   endif
     o.ssao_hbao = !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     // TODO: OGL: temporary disabled HBAO/HDAO, need to fix it
     o.ssao_hbao = false;
     o.ssao_hdao = false;
@@ -478,7 +478,7 @@ void CRender::create()
         o.ssao_opt_data = false;
         o.ssao_hbao = false;
     }
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     //	TODO: fix hbao shader to allow to perform per-subsample effect!
     o.hbao_vectorized = false;
     if (o.ssao_hdao)

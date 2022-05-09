@@ -9,7 +9,7 @@ IC HRESULT GetData(ID3DQuery* pQuery, void* pData, u32 DataSize);
 IC HRESULT BeginQuery(ID3DQuery* pQuery);
 IC HRESULT EndQuery(ID3DQuery* pQuery);
 IC HRESULT ReleaseQuery(ID3DQuery *pQuery);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
 IC HRESULT CreateQuery(GLuint* pQuery, D3D_QUERY type);
 IC HRESULT GetData(GLuint query, void* pData, u32 DataSize);
 IC HRESULT BeginQuery(GLuint query);
@@ -72,7 +72,7 @@ IC HRESULT ReleaseQuery(ID3DQuery* pQuery)
     return S_OK;
 }
 
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
 
 IC HRESULT CreateQuery(GLuint* pQuery, D3D_QUERY type)
 {

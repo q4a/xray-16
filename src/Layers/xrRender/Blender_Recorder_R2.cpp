@@ -137,7 +137,7 @@ u32 CBlender_Compile::r_Sampler(
     {
 #if defined(USE_DX11)
         r_dx10Texture(_name, texture, true);
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
         i_Texture(dwStage, texture);
 #else
 #   error No graphics API selected or enabled!

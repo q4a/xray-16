@@ -12,7 +12,7 @@ public:
     dxPixEventWrapper(const wchar_t* wszName) { HW.BeginPixEvent(wszName); }
     ~dxPixEventWrapper() { HW.EndPixEvent(); }
 };
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
 #   define PIX_EVENT(Name) dxPixEventWrapper pixEvent##Name(#Name)
 
 class dxPixEventWrapper

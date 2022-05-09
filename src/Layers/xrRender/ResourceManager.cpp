@@ -326,7 +326,7 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
 {
     if (!GEnv.isDedicatedServer)
     {
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
 #   ifndef _EDITOR
         if (_lua_HasShader(s_shader))
             return _lua_Create(s_shader, s_textures);
@@ -375,7 +375,7 @@ void CResourceManager::DeferredUpload()
 
 #if defined(USE_DX9) || defined(USE_DX11)
     xr_parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Load(); });
-#elif defined(USE_OGL) // XXX: OGL: Set additional contexts for all worker threads?
+#elif defined(USE_OGL) || defined(USE_OGLR1) // XXX: OGL: Set additional contexts for all worker threads?
     for (auto& texture : m_textures)
         texture.second->Load();
 #else
@@ -390,7 +390,7 @@ void CResourceManager::DeferredUnload()
 
 #if defined(USE_DX9) || defined(USE_DX11)
     xr_parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Unload(); });
-#elif defined(USE_OGL) // XXX: OGL: Set additional contexts for all worker threads?
+#elif defined(USE_OGL) || defined(USE_OGLR1) // XXX: OGL: Set additional contexts for all worker threads?
     for (auto& texture : m_textures)
         texture.second->Unload();
 #else

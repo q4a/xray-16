@@ -37,7 +37,7 @@ public:
 private:
 #if defined(USE_DX11)
     void GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G);
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
     void GenLUT(D3DGAMMARAMP& G);
 #else
 #   error No graphics API selected or enabled!

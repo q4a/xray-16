@@ -86,7 +86,7 @@ class cl_texgen : public R_constant_setup
             0.0f, 0.0f, 1.0f, 0.0f,
             0.5f, 0.5f, 0.0f, 1.0f
         };
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
         Fmatrix mTexelAdjust =
         {
             0.5f, 0.0f, 0.0f, 0.0f,
@@ -130,7 +130,7 @@ class cl_VPtexgen : public R_constant_setup
             0.0f, 0.0f, 1.0f, 0.0f,
             0.5f, 0.5f, 0.0f, 1.0f
         };
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
         Fmatrix mTexelAdjust =
         {
             0.5f, 0.0f, 0.0f, 0.0f,

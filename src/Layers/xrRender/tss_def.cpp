@@ -5,6 +5,8 @@
 
 #ifdef USE_OGL
 #include "../xrRenderGL/glState.h"
+#elif defined(USE_OGLR1)
+#include "../xrRenderGLR1/glState.h"
 #endif
 
 // TODO: DX10: Implement equivalent for SimulatorStates::record for DX10
@@ -31,7 +33,7 @@ void SimulatorStates::record(ID3DState*& state)
 #elif defined(USE_DX11)
     // VERIFY(!"SimulatorStates::record not implemented!");
     state = ID3DState::Create(*this);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     state = ID3DState::Create();
     for (SimulatorStates::State& S : States)
     {

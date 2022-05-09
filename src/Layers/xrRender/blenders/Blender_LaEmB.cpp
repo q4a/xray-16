@@ -8,7 +8,7 @@
  * Consider removing.
  */
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) || (RENDER != R_GLR1)
 #error "The blender can't be used in this renderer generation"
 #endif
 

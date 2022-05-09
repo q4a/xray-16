@@ -11,7 +11,7 @@ const xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"
 u32 ps_r2_smapsize = 2048;
 const xr_token qsmapsize_token[] =
 {
-#if !defined(MASTER_GOLD) || RENDER == R_R1
+#if !defined(MASTER_GOLD) || RENDER == R_R1 || RENDER == R_GLR1
     { "256", 256 }, // Too bad for R2+
     { "512", 512 }, // But works
 #endif
@@ -23,7 +23,7 @@ const xr_token qsmapsize_token[] =
     { "3072", 3072 },
     { "3584", 3584 },
     { "4096", 4096 },
-#if defined(USE_DX11) || defined(USE_OGL) // XXX: check if values more than 8192 are supported on OpenGL
+#if defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1) // XXX: check if values more than 8192 are supported on OpenGL
     { "5120", 5120 },
     { "6144", 6144 },
     { "7168", 7168 },
@@ -297,7 +297,7 @@ public:
             CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, val));
 #elif defined(USE_DX11)
         SSManager.SetMaxAnisotropy(val);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         // OGL: don't set aniso here because it will be updated after vid restart
 #else
 #   error No graphics API selected or enabled!
@@ -559,7 +559,7 @@ public:
     }
 };
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
 #include "r__pixel_calculator.h"
 class CCC_BuildSSA : public IConsole_Command
 {
@@ -736,8 +736,8 @@ void xrRender_initconsole()
     CMD1(CCC_Screenshot, "screenshot");
 
 #ifdef DEBUG
-#if RENDER != R_R1
-    CMD1(CCC_BuildSSA, "build_ssa");
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
+    //CMD1(CCC_BuildSSA, "build_ssa");
 #endif
     CMD4(CCC_Integer, "r__lsleep_frames", &ps_r__LightSleepFrames, 4, 30);
     CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
@@ -848,8 +848,8 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_sun_tsm_proj", &ps_r2_sun_tsm_projection, .001f, 0.8f);
     CMD4(CCC_Float, "r2_sun_tsm_bias", &ps_r2_sun_tsm_bias, -0.5, +0.5);
     CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 150.f); //AVO: extended from 50.f to 150.f
-#if RENDER != R_R1
-    CMD4(CCC_Float, "r2_sun_far", &OLES_SUN_LIMIT_27_01_07, 51.f, 180.f);
+#if (RENDER != R_R1) && (RENDER != RGLR1)
+    //CMD4(CCC_Float, "r2_sun_far", &OLES_SUN_LIMIT_27_01_07, 51.f, 180.f);
 #endif
     CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 1.0f);
     CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
@@ -920,7 +920,7 @@ void xrRender_initconsole()
 #ifdef DEBUG
     CMD4(CCC_SunshaftsIntensity, "r__sunshafts_intensity", &SunshaftsIntensity, 0.f, 1.f);
 #endif
-
+/*
     CMD3(CCC_Mask, "r2_volumetric_lights", &ps_r2_ls_flags, R2FLAG_VOLUMETRIC_LIGHTS);
     //CMD3(CCC_Mask, "r2_sun_shafts", &ps_r2_ls_flags, R2FLAG_SUN_SHAFTS);
     CMD3(CCC_Token, "r2_sun_shafts", &ps_r_sun_shafts, qsun_shafts_token);
@@ -955,7 +955,7 @@ void xrRender_initconsole()
     //CMD3(CCC_Mask, "r3_msaa_alphatest", &ps_r2_ls_flags, (u32)R3FLAG_MSAA_ALPHATEST);
     CMD3(CCC_Token, "r3_msaa_alphatest", &ps_r3_msaa_atest, qmsaa__atest_token);
     CMD3(CCC_Token, "r3_minmax_sm", &ps_r3_minmax_sm, qminmax_sm_token);
-
+*/
 //  Allow real-time fog config reload
 #if (RENDER == R_R3) || (RENDER == R_R4)
 #   ifndef MASTER_GOLD

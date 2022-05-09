@@ -187,7 +187,7 @@ public:
     SState* _CreateState(SimulatorStates& Code);
     void _DeleteState(const SState* SB);
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     SDeclaration* _CreateDecl (u32 FVF);
 #endif
 
@@ -214,7 +214,7 @@ public:
 
     CResourceManager() : bDeferredLoad(TRUE)
     {
-#if RENDER == R_R1 || RENDER == R_R2
+#if RENDER == R_R1 || RENDER == R_R2 || RENDER == R_GLR1
         m_shader_fallback_allowed = !!strstr(Core.Params, "-lack_of_shaders");
 #else // For another renderers we should always allow fallback
         m_shader_fallback_allowed = true;

@@ -5,6 +5,8 @@
 
 #if defined(USE_OGL)
 #include "../xrRenderGL/glState.h"
+#elif defined(USE_OGLR1)
+#include "../xrRenderGLR1/glState.h"
 #endif
 
 class SimulatorStates

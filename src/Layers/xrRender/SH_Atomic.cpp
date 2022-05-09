@@ -46,7 +46,7 @@ SVS::~SVS()
 
 #if defined(USE_DX9) || defined(USE_DX11)
     _RELEASE(sh);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     CHK_GL(glDeleteProgram(sh));
 #else
 #   error No graphics API selected or enabled!
@@ -59,7 +59,7 @@ SPS::~SPS()
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     _RELEASE(sh);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     CHK_GL(glDeleteProgram(sh));
 #else
 #   error No graphics API selected or enabled!
@@ -153,7 +153,7 @@ SDeclaration::~SDeclaration()
 {
     RImplementation.Resources->_DeleteDecl(this);
     //	Release vertex layout
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     glDeleteVertexArrays(1, &dcl);
 #elif defined(USE_DX11) || defined(USE_OGL)
     xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;

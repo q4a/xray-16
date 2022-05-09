@@ -38,7 +38,7 @@ public:
     R_dsgraph::mapSorted_T mapDistort;
     R_dsgraph::mapHUD_T    mapHUDSorted;
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     R_dsgraph::mapSorted_T mapWmark; // sorted
     R_dsgraph::mapSorted_T mapEmissive;
     R_dsgraph::mapSorted_T mapHUDEmissive;
@@ -46,7 +46,7 @@ public:
 
     // Runtime structures
     xr_vector<R_dsgraph::mapNormalVS::value_type *> nrmVS;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     xr_vector<R_dsgraph::mapNormalGS::value_type *> nrmGS;
 #endif
     xr_vector<R_dsgraph::mapNormalPS::value_type *> nrmPS;
@@ -56,7 +56,7 @@ public:
     xr_vector<R_dsgraph::mapNormalTextures::value_type *> nrmTexturesTemp;
 
     xr_vector<R_dsgraph::mapMatrixVS::value_type *> matVS;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     xr_vector<R_dsgraph::mapMatrixGS::value_type *> matGS;
 #endif
     xr_vector<R_dsgraph::mapMatrixPS::value_type *> matPS;
@@ -135,7 +135,7 @@ public:
         mapDistort.clear();
         mapHUDSorted.clear();
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
         mapWmark.clear();
         mapEmissive.clear();
         mapHUDEmissive.clear();

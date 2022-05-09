@@ -33,7 +33,7 @@ public:
     ID3DDepthStencilView* pZRT;
     ID3D11UnorderedAccessView* pUAView;
 #   endif
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint pRT;
     GLuint pZRT;
     GLenum target;
