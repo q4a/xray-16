@@ -1,0 +1,27 @@
+#include "common.h"
+
+struct 	v2p
+{
+ 	float2 	tc0: 	TEXCOORD0;	// base
+ 	float2 	tc1: 	TEXCOORD1;	// base
+};
+
+uniform sampler2D 	s_base0;
+uniform sampler2D 	s_base1;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 	main_ps_1_1	( v2p I )	: COLOR
+
+out vec4 SV_Target;
+
+layout(location = 0) in v2p I;
+
+void main()
+{
+	float4	t_0 	= tex2D		(s_base0,I.tc0);
+	float4	t_1 	= tex2D		(s_base1,I.tc1);
+	
+	// out
+	SV_Target = t_0*t_1*L_dynamic_color;
+}

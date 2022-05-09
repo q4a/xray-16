@@ -1,0 +1,16 @@
+#include "common.h"
+#include "iostructs\p_clouds.h"
+
+uniform sampler2D 	s_clouds0;	//: register(s0);
+uniform sampler2D 	s_clouds1;	//: register(s1);
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+half4 	_main	( v2p I )//	: COLOR
+{
+	half4 	s0	= tex2D		(s_clouds0,I.tc0);
+	half4 	s1	= tex2D		(s_clouds1,I.tc1);
+	half4 	mix 	= I.color * (s0 + s1)	;
+
+	return  half4	(mix.rgb, mix.a)	;
+}

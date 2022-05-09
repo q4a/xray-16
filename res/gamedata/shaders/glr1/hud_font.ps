@@ -1,0 +1,10 @@
+#include "common.h"
+#include "iostructs\p_tl.h"
+
+float4 	_main	( p_TL I )
+{
+	half4 r 	= tex2D	(s_base,I.Tex0).rrrr;
+	r.rgb		= I.Color.rgb;
+	r.a			*= I.Color.a;
+	return 		r;
+}
