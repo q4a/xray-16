@@ -121,7 +121,7 @@ void FTreeVisual::Render(float /*LOD*/)
     if (tvs.dwFrame != Device.dwFrame)
         tvs.calculate();
 // setup constants
-#if (RENDER != R_R1) || (RENDER != R_GLR1)
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     Fmatrix xform_v;
     xform_v.mul_43(RCache.get_xform_view(), xform);
     RCache.tree.set_m_xform_v(xform_v); // matrix
