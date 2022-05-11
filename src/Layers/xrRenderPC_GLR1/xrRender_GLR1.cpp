@@ -24,7 +24,7 @@ public:
             Log("~ No shaders found for xrRender_GLR1");
             return false;
         }
-        return xrRender_test_hw;
+        return xrRender_test_hw();
     }
 
     const xr_vector<pcstr>& ObtainSupportedModes() override
