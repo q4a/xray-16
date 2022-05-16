@@ -52,7 +52,7 @@ void CLight_DB::Load(IReader* fs)
                 L->set_rotation(tmp_D, tmp_R);
                 L->set_range(Ldata.range);
                 L->set_color(Ldata.diffuse);
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
                 L->set_shadow(false);
 #else
                 L->set_shadow(true);
@@ -68,7 +68,7 @@ void CLight_DB::Load(IReader* fs)
     R_ASSERT2(sun, "Where is sun?");
 }
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
 void CLight_DB::LoadHemi()
 {
     string_path fn_game;
@@ -141,7 +141,7 @@ void CLight_DB::add_light(light* L)
     if (Device.dwFrame == L->frame_render)
         return;
     L->frame_render = Device.dwFrame;
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     if (L->flags.bStatic)
         return; // skip static lighting, 'cause they are in lmaps
     if (ps_r1_flags.test(R1FLAG_DLIGHTS))

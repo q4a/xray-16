@@ -6,7 +6,7 @@
 #   define FVF_COLOR(c) (c)
 #elif defined(USE_DX11)
 #   define FVF_COLOR(c) ((c & 0xff00ff00) | ((c >> 16) & 0xff) | ((c & 0xff) << 16u))
-#elif defined(USE_OGL) //the compiler should know to dedup this, defined explicitly for organization
+#elif defined(USE_OGL) || defined(USE_OGLR1) //the compiler should know to dedup this, defined explicitly for organization
 #   define FVF_COLOR(c) (c)
 #else
 #   error No graphics API selected or enabled!

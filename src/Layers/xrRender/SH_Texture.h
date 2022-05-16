@@ -10,7 +10,7 @@ class CTheoraSurface;
 class ECORE_API CTexture : public xr_resource_named
 {
 public:
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
     enum MaxTextures
     {
         mtMaxPixelShaderTextures = 16,
@@ -59,7 +59,7 @@ public:
         rstCompute = rstDomain + 256,
         rstInvalid = rstCompute + 256
     };
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     //	Since OGL doesn't differentiate between stages,
     //	distance between enum values should be the max for that stage.
     enum ResourceShaderType
@@ -88,7 +88,7 @@ public:
 #if defined(USE_DX9) || defined(USE_DX11)
     void surface_set(ID3DBaseTexture* surf);
     ID3DBaseTexture* surface_get();
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     void surface_set(GLenum target, GLuint surf);
     GLuint surface_get();
 #else
@@ -175,7 +175,7 @@ private:
     u32 m_height;
     ID3DBaseTexture* desc_cache;
     D3D_TEXTURE2D_DESC desc;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint pSurface;
     GLuint pBuffer;
     // Sequence data

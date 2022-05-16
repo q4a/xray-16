@@ -131,7 +131,7 @@ dxEnvironmentRender::dxEnvironmentRender()
 {
     tsky0 = RImplementation.Resources->_CreateTexture("$user$sky0");
     tsky1 = RImplementation.Resources->_CreateTexture("$user$sky1");
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     // These textures are specified in clouds.s
     tclouds0 = RImplementation.Resources->_CreateTexture("$user$clouds0");
     tclouds1 = RImplementation.Resources->_CreateTexture("$user$clouds1");
@@ -159,7 +159,7 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
 #if defined(USE_DX9) || defined(USE_DX11)
             const u32 smp_location_sky = CTexture::rstVertex;
             const u32 smp_location_clouds = CTexture::rstVertex;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
             const u32 smp_location_sky = CTexture::rstVertex + 1 /* m_WVP */;
             const u32 smp_location_clouds = CTexture::rstVertex + 1 /* m_WVP */;
 #else
@@ -182,7 +182,7 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
     }
 
     //. Setup skybox textures, somewhat ugly
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     GLuint e0 = mixRen.sky_r_textures[0].second->surface_get();
     GLuint e1 = mixRen.sky_r_textures[1].second->surface_get();
 
@@ -206,7 +206,8 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
 
 // ******************** Environment params (setting)
 #if defined(USE_DX9)
-#   if RENDER == R_R1
+
+#   if (RENDER == R_R1) || (RENDER == R_GLR1)
     Fvector3 fog_color = env.CurrentEnv->fog_color;
     fog_color.mul(ps_r1_fog_luminance);
 #   else
@@ -258,7 +259,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
     RCache.set_Shader(sh_2sky);
 #if defined(USE_DX9) || defined(USE_DX11)
     RCache.set_Textures(&mixRen.sky_r_textures);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     if (HW.Caps.geometry.bVTF)
         RCache.set_Textures(&mixRen.sky_r_textures);
 #else
@@ -276,7 +277,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
     // Sun
     GEnv.Render->rmNormal();
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     //
     // This hack is done to make sure that the state is set for sure:
     // The state may be not set by RCache if the state is changed using API SetRenderState() function before
@@ -356,7 +357,7 @@ void dxEnvironmentRender::OnDeviceDestroy()
 #if defined(USE_DX9) || defined(USE_DX11)
     tsky0->surface_set(nullptr);
     tsky1->surface_set(nullptr);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     tsky0->surface_set(GL_TEXTURE_CUBE_MAP, 0);
     tsky1->surface_set(GL_TEXTURE_CUBE_MAP, 0);
     tclouds0->surface_set(GL_TEXTURE_2D, 0);

@@ -73,7 +73,7 @@ private:
 
     Fvector approximate;
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     Fvector last_position;
     s32 ticks_to_update;
     s32 sky_rays_uptodate;
@@ -136,7 +136,7 @@ private:
     // prepares static or hemisphere lights for ambient occlusion calculations
     void prepare_lights(Fvector& position, IRenderable* O);
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     //	Updates only if makes a desizion that update is necessary
     void smart_update(IRenderable* O);
 #endif //	RENDER!=R_R1

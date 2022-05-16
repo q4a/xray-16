@@ -116,7 +116,7 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 #endif
         C.r_End();
         break;
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     case SE_R1_LPOINT:
         C.r_Pass("lmap_point", "add_point", FALSE, TRUE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE, TRUE);
         C.r_Sampler("s_base", C.L_textures[0]);

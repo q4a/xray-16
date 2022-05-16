@@ -44,7 +44,7 @@ void stats_manager::increment_stats_rtarget(ID3DTexture2D* buff)
         return;
 
     _D3DPOOL pool = D3DPOOL_MANAGED;
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
     D3DSURFACE_DESC desc;
     buff->GetLevelDesc(0, &desc);
     pool = desc.Pool;

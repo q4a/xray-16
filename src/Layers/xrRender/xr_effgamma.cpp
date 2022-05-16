@@ -56,7 +56,7 @@ void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA
     }
 }
 
-#elif defined(USE_DX9) || defined(USE_OGL) // !USE_DX9 && !USE_OGL
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1) // !USE_DX9 && !USE_OGL
 
 IC u16 clr2gamma(float c)
 {

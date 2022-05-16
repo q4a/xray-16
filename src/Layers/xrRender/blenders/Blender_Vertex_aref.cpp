@@ -3,7 +3,7 @@
 
 #include "Blender_Vertex_aref.h"
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
 #error "This blender can't be used in this renderer generation"
 #endif
 

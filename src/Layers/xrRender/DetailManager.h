@@ -61,7 +61,7 @@ public:
         u32 vis_ID; // индекс в visibility списке он же тип [не качается, качается1, качается2]
         float c_hemi;
         float c_sun;
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
         Fvector c_rgb;
 #endif
     };
@@ -191,7 +191,7 @@ public:
     void hw_Render();
 #if defined(USE_DX9)
     void hw_Render_dump(ref_constant array, u32 var_id, u32 lod_id, u32 c_base);
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     void hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id);
 #else
 #   error No graphics API selected or enabled!

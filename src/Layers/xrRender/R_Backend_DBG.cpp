@@ -7,7 +7,7 @@ extern IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount);
 
 void CBackend::InitializeDebugDraw()
 {
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     vs_L.create(FVF::F_L, RCache.Vertex.Buffer(), RCache.Index.Buffer());
     vs_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 #endif
@@ -15,7 +15,7 @@ void CBackend::InitializeDebugDraw()
 
 void CBackend::DestroyDebugDraw()
 {
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     vs_L.destroy();
     vs_TL.destroy();
 #endif
@@ -258,7 +258,7 @@ void CBackend::dbg_OverdrawEnd()
     // Draw a rectangle wherever the count equal I
 #if defined(USE_DX9)
     CHK_DX(HW.pDevice->SetFVF(FVF::F_TL));
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     set_Geometry(vs_TL);
 #else
 #   error No graphics API defined or enabled!
@@ -277,7 +277,7 @@ void CBackend::dbg_OverdrawEnd()
         pv[3].set(float(Device.dwWidth), float(0), c, 0, 0);
         CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, I));
         CHK_DX(HW.pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
         u32 vBase;
         FVF::TL* pv = (FVF::TL*)Vertex.Lock(4, vs_L->vb_stride, vBase);
         pv[0].set(float(0), float(Device.dwHeight), c, 0, 0);
@@ -300,7 +300,7 @@ void CBackend::dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 {
 #ifdef USE_DX9
     CHK_DX(HW.pDevice->SetRenderState(p1, p2));
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     VERIFY(!"Not implemented");
 #else
 #   error No graphics API defined or enabled!
@@ -311,7 +311,7 @@ void CBackend::dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
 {
 #ifdef USE_DX9
     CHK_DX(HW.pDevice->SetSamplerState(sampler, type, value));
-#elif defined(USE_DX11) || defined(USE_OGL)
+#elif defined(USE_DX11) || defined(USE_OGL) || defined(USE_OGLR1)
     VERIFY(!"Not implemented");
 #else
 #   error No graphics API defined or enabled!

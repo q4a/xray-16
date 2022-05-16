@@ -1,0 +1,12 @@
+#include "common.h"
+#include "iostructs\p_particle.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+uniform sampler2D s_distort;
+float4 	_main	( v2p I )
+{
+	float4	distort	= tex2D		(s_distort,I.tc0);
+	float    factor	= distort.a * dot(I.c.rgb,float3(0.33));
+	return	float4	(distort.rgb,factor);
+}

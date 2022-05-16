@@ -15,6 +15,9 @@
 #elif defined(USE_OGL)
 #include "Layers/xrRenderGL/glR_Backend_Runtime.h"
 #include "Layers/xrRenderGL/glState.h"
+#elif defined(USE_OGLR1)
+#include "Layers/xrRenderGLR1/glR_Backend_Runtime.h"
+#include "Layers/xrRenderGLR1/glState.h"
 #endif
 
 IC void R_xforms::set_c_w(R_constant* C)
@@ -61,7 +64,7 @@ IC const Fmatrix& CBackend::get_xform_view() { return xforms.get_V(); }
 IC const Fmatrix& CBackend::get_xform_project() { return xforms.get_P(); }
 #if defined(USE_DX9) || defined(USE_DX11)
 IC ID3DRenderTargetView* CBackend::get_RT(u32 ID)
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
 IC GLuint CBackend::get_RT(u32 ID)
 #else
 #   error No graphics API selected or enabled!
@@ -74,7 +77,7 @@ IC GLuint CBackend::get_RT(u32 ID)
 
 #if defined(USE_DX9) || defined(USE_DX11)
 IC ID3DDepthStencilView* CBackend::get_ZB()
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
 IC GLuint CBackend::get_ZB()
 #else
 #   error No graphics API selected or enabled!

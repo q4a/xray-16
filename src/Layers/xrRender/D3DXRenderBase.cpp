@@ -22,7 +22,7 @@ void D3DXRenderBase::setGamma(float fGamma)
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     m_Gamma.Gamma(fGamma);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
     UNUSED(fGamma);
 #else
 #    error No graphics API selected or in use!
@@ -33,7 +33,7 @@ void D3DXRenderBase::setBrightness(float fGamma)
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     m_Gamma.Brightness(fGamma);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
     UNUSED(fGamma);
 #else
 #    error No graphics API selected or in use!
@@ -44,7 +44,7 @@ void D3DXRenderBase::setContrast(float fGamma)
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     m_Gamma.Contrast(fGamma);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1) 
     UNUSED(fGamma);
 #else
 #    error No graphics API selected or in use!

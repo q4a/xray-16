@@ -26,7 +26,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
     RCache.set_xform_world(Fidentity);
     RCache.set_xform_view(ViewM);
     RCache.set_xform_project(Fidentity);
-#ifdef USE_DX9
+#if defined(USE_DX9) || defined(USE_OGLR1)
     RCache.OnFrameEnd();
 #else // when we don't have FFP support
     RCache.set_Shader(RImplementation.m_WireShader);

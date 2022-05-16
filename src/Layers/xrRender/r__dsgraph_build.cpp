@@ -40,7 +40,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
         return;
     pVisual->vis.marker = RI.marker;
 
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     if (RI.o.vis_intersect && (pVisual->vis.accept_frame != Device.dwFrame))
         return;
     pVisual->vis.accept_frame = Device.dwFrame;
@@ -78,7 +78,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
         }
         mapHUD.insert_anyway(distSQ, _MatrixItemS({ SSA, root, pVisual, xform, sh }));
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
         if (sh->flags.bEmissive)
             mapHUDEmissive.insert_anyway(distSQ, _MatrixItemS({ SSA, root, pVisual, xform, sh_d })); // sh_d -> L_special
 #endif
@@ -86,7 +86,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
     }
 
 // Shadows registering
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     RI.L_Shadows->add_element(_MatrixItem{ SSA, root, pVisual, xform });
 #endif
     if (root && root->renderable_Invisible())
@@ -99,7 +99,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
         return;
     }
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     // Emissive geometry should be marked and R2 special-cases it
     // a) Allow to skeep already lit pixels
     // b) Allow to make them 100% lit and really bright
@@ -125,7 +125,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
         auto& pass = *sh->passes[iPass];
         auto& map = mapMatrixPasses[sh->flags.iPriority / 2][iPass];
 
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
         auto& Nvs = map[pass.vs->sh];
         auto& Nps = Nvs[pass.ps->sh];
 #elif defined(USE_DX11)
@@ -140,7 +140,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
 #   error No graphics API selected or enabled!
 #endif
 
-#if defined(USE_DX9) || defined(USE_OGL)
+#if defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
         auto& Ncs = Nps[pass.constants._get()];
 #elif defined(USE_DX11)
         Nps.hs = pass.hs->sh;
@@ -164,7 +164,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
                 if (SSA > Ncs.ssa)
                 {
                     Ncs.ssa = SSA;
-#if defined(USE_DX9) || defined(USE_OGL)
+#if defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
                     if (SSA > Nps.ssa)
                     {
                         Nps.ssa = SSA;
@@ -193,7 +193,7 @@ void D3DXRenderBase::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual
         }
     }
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     if (val_recorder)
     {
         Fbox3 temp;
@@ -211,7 +211,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         return;
     pVisual->vis.marker = RI.marker;
 
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     if (RI.o.vis_intersect && (pVisual->vis.accept_frame != Device.dwFrame))
         return;
     pVisual->vis.accept_frame = Device.dwFrame;
@@ -248,7 +248,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         return;
     }
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     // Emissive geometry should be marked and R2 special-cases it
     // a) Allow to skeep already lit pixels
     // b) Allow to make them 100% lit and really bright
@@ -277,7 +277,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         auto& pass = *sh->passes[iPass];
         auto& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
 
-#if defined(USE_DX9)
+#if defined(USE_DX9) || defined(USE_OGLR1)
         auto& Nvs = map[pass.vs->sh];
         auto& Nps = Nvs[pass.ps->sh];
 #elif defined(USE_DX11)
@@ -299,7 +299,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         Nps.ds = pass.ds->sh;
 
         auto& Ncs = Nps.mapCS[pass.constants._get()];
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         auto& Ncs = Nps[pass.constants._get()];
 #else
 #   error No graphics API selected or enabled!
@@ -326,7 +326,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
                     if (SSA > Nps.mapCS.ssa)
                     {
                         Nps.mapCS.ssa = SSA;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
                     if (SSA > Nps.ssa)
                     {
                         Nps.ssa = SSA;
@@ -352,7 +352,7 @@ void D3DXRenderBase::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         }
     }
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     if (val_recorder)
     {
         val_recorder->push_back(pVisual->vis.box);
@@ -511,7 +511,7 @@ void D3DXRenderBase::add_leafs_Static(dxRender_Visual* pVisual)
                 return;
             mapLOD.insert_anyway(D, _LodItem({ ssa, pVisual }));
         }
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)
 #else
         if (ssa > r_ssaLOD_B)
@@ -739,7 +739,7 @@ void D3DXRenderBase::add_Static(dxRender_Visual* pVisual, const CFrustum& view, 
                 return;
             mapLOD.insert_anyway(D, _LodItem({ ssa, pVisual }));
         }
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)
 #else
         if (ssa > r_ssaLOD_B)

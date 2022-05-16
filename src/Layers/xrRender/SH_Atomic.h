@@ -9,6 +9,8 @@
 #include "Layers/xrRenderDX10/StateManager/dx10State.h"
 #elif defined(USE_OGL)
 #include "Layers/xrRenderGL/glState.h"
+#elif defined(USE_OGLR1)
+#include "Layers/xrRenderGLR1/glState.h"
 #endif
 
 #pragma pack(push, 4)
@@ -30,7 +32,7 @@ struct ECORE_API SVS : public xr_resource_named
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     ID3DVertexShader* sh;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint sh;
 #else
 #   error No graphics API selected or enabled!
@@ -49,7 +51,7 @@ struct ECORE_API SPS : public xr_resource_named
 {
 #if defined(USE_DX9) || defined(USE_DX11)
     ID3DPixelShader* sh;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint sh;
 #else
 #   error No graphics API selected or enabled!
@@ -139,7 +141,7 @@ struct ECORE_API SDeclaration : public xr_resource_flagged
     //	Maps input signature to input layout
     xr_map<ID3DBlob*, ID3DInputLayout*> vs_to_layout;
     xr_vector<D3D_INPUT_ELEMENT_DESC> dx10_dcl_code;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     u32 FVF;
     GLuint dcl;
 #else

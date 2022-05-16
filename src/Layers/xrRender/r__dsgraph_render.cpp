@@ -127,7 +127,7 @@ void D3DXRenderBase::r_dsgraph_render_graph(u32 _priority)
                     RCache.set_GS(gs_it->first);
 
                     mapNormalPS& ps = gs_it->second;
-#elif defined(USE_DX9)
+#elif defined(USE_DX9) || defined(USE_OGLR1)
                     mapNormalPS& ps = vs_it->second;
 #else
 #   error No graphics API selected or enabled!
@@ -144,7 +144,7 @@ void D3DXRenderBase::r_dsgraph_render_graph(u32 _priority)
                         RCache.set_DS(ps_it->second.ds);
 
                         mapNormalCS& cs = ps_it->second.mapCS;
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
                         mapNormalCS& cs = ps_it->second;
 #else
 #   error No graphics API selected or enabled!
@@ -240,7 +240,7 @@ void D3DXRenderBase::r_dsgraph_render_graph(u32 _priority)
                 RCache.set_GS(gs_it->first);
 
                 mapMatrixPS& ps = gs_it->second;
-#elif defined(USE_DX9)
+#elif defined(USE_DX9) || defined(USE_OGLR1)
                 mapMatrixPS& ps = vs_id->second;
 #else
 #   error No graphics API selected or enabled!
@@ -257,7 +257,7 @@ void D3DXRenderBase::r_dsgraph_render_graph(u32 _priority)
                     RCache.set_DS(ps_it->second.ds);
 
                     mapMatrixCS& cs = ps_it->second.mapCS;
-#elif defined(USE_DX9) || defined(USE_OGL)
+#elif defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
                     mapMatrixCS& cs = ps_it->second;
 #else
 #   error No graphics API selected or enabled!
@@ -458,7 +458,7 @@ void D3DXRenderBase::r_dsgraph_render_hud()
         sort_front_to_back_render_and_clean(mapHUD);
     }
 
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     if (g_hud && g_hud->RenderActiveItemUIQuery())
         r_dsgraph_render_hud_ui(); // hud ui
 #endif
@@ -472,7 +472,7 @@ void D3DXRenderBase::r_dsgraph_render_hud_ui()
 
     hud_transform_helper helper;
 
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     // Targets, use accumulator for temporary storage
     const ref_rt rt_null;
     RCache.set_RT(0, 1);
@@ -511,7 +511,7 @@ void D3DXRenderBase::r_dsgraph_render_sorted()
 // strict-sorted render
 void D3DXRenderBase::r_dsgraph_render_emissive()
 {
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     PIX_EVENT(r_dsgraph_render_emissive);
 
     sort_front_to_back_render_and_clean(mapEmissive);
@@ -528,7 +528,7 @@ void D3DXRenderBase::r_dsgraph_render_emissive()
 // strict-sorted render
 void D3DXRenderBase::r_dsgraph_render_wmarks()
 {
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     PIX_EVENT(r_dsgraph_render_wmarks);
 
     sort_front_to_back_render_and_clean(mapWmark);
@@ -623,7 +623,7 @@ void D3DXRenderBase::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum
                 renderable->renderable_Render(renderable);
             }
         }
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
         // Actor Shadow (Sun + Light)
         if (g_pGameLevel && phase == RImplementation.PHASE_SMAP
             && ps_r__common_flags.test(RFLAG_ACTOR_SHADOW))

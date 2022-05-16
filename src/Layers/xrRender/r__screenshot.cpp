@@ -412,7 +412,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
     _RELEASE(pSrcTexture);
 }
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
 // XXX: Provide full implementation
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
@@ -490,7 +490,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
     if (hr != D3D_OK)
         return;
 
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     u32 rtWidth = Target->get_rtwidth();
     u32 rtHeight = Target->get_rtheight();
 #else // RENDER != R_R1
@@ -504,7 +504,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
     u32* pEnd = pPixel + (rtWidth * rtHeight);
 
     // Kill alpha
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     if (Target->rt_Color->fmt == D3DFMT_A16B16G16R16F)
     {
         static const int iMaxPixelsInARow = 1024;
@@ -573,7 +573,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
     }
     HW.pContext->Unmap(pTex, 0);
 }
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
 void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 {
     // TODO: OGL: Implement screenshot feature.

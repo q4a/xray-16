@@ -46,7 +46,7 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
     lods().r(nSWI.sw, nSWI.count * sizeof(FSlideWindow));
 
 // fast
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     if (m_fast)
     {
         destructor<IReader> geomdef(data->open_chunk(OGF_FASTPATH));
@@ -67,7 +67,7 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
 
 void FProgressive::Render(float LOD)
 {
-#if RENDER != R_R1
+#if (RENDER != R_R1) && (RENDER != R_GLR1)
     if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
     {
         int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);

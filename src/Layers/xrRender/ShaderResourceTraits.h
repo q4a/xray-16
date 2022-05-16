@@ -2,7 +2,7 @@
 
 #include "ResourceManager.h"
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
 template<GLenum type>
 inline std::pair<GLuint, GLuint> GLCompileShader(pcstr* buffer, size_t size, pcstr name)
 {
@@ -71,7 +71,7 @@ struct ShaderTypeTraits<SVS>
 {
     using MapType = CResourceManager::map_VS;
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -127,7 +127,7 @@ struct ShaderTypeTraits<SVS>
 #elif defined(USE_DX11)
         res = HW.pDevice->CreateVertexShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -147,7 +147,7 @@ struct ShaderTypeTraits<SPS>
 {
     using MapType = CResourceManager::map_PS;
 
-#if defined(USE_OGL)
+#if defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -217,7 +217,7 @@ struct ShaderTypeTraits<SPS>
 #elif defined(USE_DX11)
         res = HW.pDevice->CreatePixelShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -243,7 +243,7 @@ struct ShaderTypeTraits<SGS>
     using HWShaderType = ID3DGeometryShader*;
     using BufferType = DWORD const*;
     using ResultType = HRESULT;
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -290,7 +290,7 @@ struct ShaderTypeTraits<SGS>
 #   if defined(USE_DX11)
         res = HW.pDevice->CreateGeometryShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -315,7 +315,7 @@ struct ShaderTypeTraits<SHS>
     using HWShaderType = ID3D11HullShader*;
     using BufferType = DWORD const*;
     using ResultType = HRESULT;
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -345,7 +345,7 @@ struct ShaderTypeTraits<SHS>
 #   if defined(USE_DX11)
         res = HW.pDevice->CreateHullShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -370,7 +370,7 @@ struct ShaderTypeTraits<SDS>
     using HWShaderType = ID3D11DomainShader*;
     using BufferType = DWORD const*;
     using ResultType = HRESULT;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -400,7 +400,7 @@ struct ShaderTypeTraits<SDS>
 #   if defined(USE_DX11)
         res = HW.pDevice->CreateDomainShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else
@@ -425,7 +425,7 @@ struct ShaderTypeTraits<SCS>
     using HWShaderType = ID3D11ComputeShader*;
     using BufferType = DWORD const*;
     using ResultType = HRESULT;
-#   elif defined(USE_OGL)
+#   elif defined(USE_OGL) || defined(USE_OGLR1)
     using LinkageType = const GLenum*;
     using HWShaderType = GLuint;
     using BufferType = pcstr*;
@@ -472,7 +472,7 @@ struct ShaderTypeTraits<SCS>
 #if defined(USE_DX11)
         res = HW.pDevice->CreateComputeShader(buffer, size, linkage, &sh);
         UNUSED(name);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
         if (linkage)
             res = GLUseBinary(buffer, size, linkage, name);
         else

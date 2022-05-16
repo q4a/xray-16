@@ -218,7 +218,7 @@ void R_constant_table::merge(R_constant_table* T)
             C->type = src->type;
             C->ps = src->ps;
             C->vs = src->vs;
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
             C->gs = src->gs;
 #   if defined(USE_DX11)
             C->hs = src->hs;
@@ -238,7 +238,7 @@ void R_constant_table::merge(R_constant_table* T)
             R_constant_load& dL = C->get_load(src->destination);
             dL.index = sL.index;
             dL.cls = sL.cls;
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
             dL.location = sL.location;
             dL.program = sL.program;
 #endif // USE_OGL

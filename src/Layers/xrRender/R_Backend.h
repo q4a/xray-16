@@ -100,7 +100,7 @@ private:
 #if defined(USE_DX9) || defined (USE_DX11)
     ID3DRenderTargetView* pRT[4];
     ID3DDepthStencilView* pZB;
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     GLuint pFB;
     GLuint pRT[4];
     GLuint pZB;
@@ -134,6 +134,9 @@ private:
     GLuint ps;
     GLuint vs;
     GLuint gs;
+#elif defined(USE_OGLR1) 
+    GLuint ps;
+    GLuint vs;
 #else
 #   error No graphics API selected or enabled!
 #endif
@@ -175,14 +178,14 @@ private:
     CTexture* textures_ps[CTexture::mtMaxPixelShaderTextures]; // stages
     //CTexture* textures_vs[5]; // dmap + 4 vs
     CTexture* textures_vs[CTexture::mtMaxVertexShaderTextures]; // 4 vs
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     CTexture* textures_gs[CTexture::mtMaxGeometryShaderTextures]; // 4 vs
 #   if defined(USE_DX11)
     CTexture* textures_hs[CTexture::mtMaxHullShaderTextures]; // 4 vs
     CTexture* textures_ds[CTexture::mtMaxDomainShaderTextures]; // 4 vs
     CTexture* textures_cs[CTexture::mtMaxComputeShaderTextures]; // 4 vs
 #   endif
-#elif defined(USE_DX9)
+#elif defined(USE_DX9) || defined(USE_OGLR1)
     // Nothing, because DX9 only has VS and PS
 #else
 #   error No graphics API selected or enabled!
@@ -264,7 +267,7 @@ public:
     IC void set_ZB(ID3DDepthStencilView* ZB);
     IC ID3DRenderTargetView* get_RT(u32 ID = 0);
     IC ID3DDepthStencilView* get_ZB();
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     IC void set_FB(GLuint FB = 0);
     IC void set_RT(GLuint RT, u32 ID = 0);
     IC void set_ZB(GLuint ZB);
@@ -283,7 +286,7 @@ public:
 
     IC bool ClearRTRect(ID3DRenderTargetView* rt, const Fcolor& color, size_t numRects, const Irect* rects);
     IC bool ClearZBRect(ID3DDepthStencilView* zb, float depth, size_t numRects, const Irect* rects);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     IC void ClearRT(GLuint rt, const Fcolor& color);
 
     IC void ClearZB(GLuint zb, float depth);
@@ -301,7 +304,7 @@ public:
         return ClearRTRect(rt->pRT, color, numRects, rects);
     }
 
-#if defined(USE_DX9) || defined(USE_OGL)
+#if defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
     ICF void ClearZB(ref_rt& zb, float depth) { ClearZB(zb->pRT, depth);}
     ICF void ClearZB(ref_rt& zb, float depth, u8 stencil) { ClearZB(zb->pRT, depth, stencil);}
     ICF bool ClearZBRect(ref_rt& zb, float depth, size_t numRects, const Irect* rects)
@@ -343,7 +346,7 @@ public:
 
 #if defined(USE_DX9) || defined(USE_DX11)
     ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = nullptr);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     ICF void set_PS(GLuint _ps, LPCSTR _n = 0);
 #else
 #   error No graphics API selected or enabled!
@@ -351,7 +354,7 @@ public:
 
     ICF void set_PS(ref_ps& _ps) { set_PS(_ps->sh, _ps->cName.c_str()); }
 
-#ifndef USE_DX9
+#if !defined(USE_DX9) && !defined(USE_OGLR1)
     ICF void set_GS(ref_gs& _gs) { set_GS(_gs->sh, _gs->cName.c_str()); }
 
 #   if defined(USE_DX11)
@@ -371,7 +374,7 @@ public:
 #endif // USE_DX9
 
 
-#if defined(USE_DX9) || defined(USE_OGL)
+#if defined(USE_DX9) || defined(USE_OGL) || defined(USE_OGLR1)
     ICF bool is_TessEnabled() { return false; }
 #elif defined(USE_DX11)
     ICF bool is_TessEnabled();
@@ -389,7 +392,7 @@ protected: //	In DX11+ we need input shader signature which is stored in ref_vs
 
 #if defined(USE_DX9) || defined(USE_DX11)
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);
-#elif defined(USE_OGL)
+#elif defined(USE_OGL) || defined(USE_OGLR1)
     ICF void set_VS(GLuint _vs, LPCSTR _n = 0);
 #else
 #   error No graphics API selected or enabled!

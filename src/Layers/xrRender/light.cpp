@@ -98,7 +98,7 @@ void light::set_texture(LPCSTR name)
 }
 #endif
 
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
 void light::set_texture(LPCSTR name) {}
 #endif
 

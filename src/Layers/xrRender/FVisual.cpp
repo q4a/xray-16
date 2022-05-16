@@ -51,7 +51,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         p_rm_Indices->AddRef();
 #endif
         // check for fast-vertices
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
         if (data->find_chunk(OGF_FASTPATH) && ps_r1_force_geomx)
 #else
         if (data->find_chunk(OGF_FASTPATH))
@@ -168,7 +168,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 void Fvisual::Render(float)
 {
-#if RENDER == R_R1
+#if (RENDER == R_R1) || (RENDER == R_GLR1)
     if (m_fast && ps_r1_force_geomx)
 #else
     if (m_fast && (ps_r1_force_geomx || RImplementation.phase == CRender::PHASE_SMAP && !RCache.is_TessEnabled()))

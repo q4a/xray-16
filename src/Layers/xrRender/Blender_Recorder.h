@@ -174,7 +174,7 @@ public:
     void r_Sampler_clf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
     void r_Sampler_clw(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
 
-#ifdef USE_OGL
+#if defined(USE_OGL) || defined(USE_OGLR1)
     void i_Comparison(u32 s, u32 func);
     void r_Sampler_cmp(pcstr name, pcstr texture, bool b_ps1x_ProjectiveDivide = false);
 #endif // USE_OGL
