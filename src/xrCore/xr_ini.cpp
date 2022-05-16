@@ -134,6 +134,7 @@ int _cdecl _ui64toa_s(uint64_t value, char *str, size_t size, int radix)
 LARGE_INTEGER _cdecl _atoi64(const char *str)
 {
     ULARGE_INTEGER RunningTotal = 0;
+    LARGE_INTEGER res;
     char bMinus = 0;
 
     while (*str == ' ' || (*str >= '\011' && *str <= '\015'))
@@ -154,8 +155,8 @@ LARGE_INTEGER _cdecl _atoi64(const char *str)
         RunningTotal = RunningTotal * 10 + *str - '0';
         str++;
     } /* while */
-
-    return bMinus ? -RunningTotal : RunningTotal;
+    res.QuadPart = bMinus ? -RunningTotal : RunningTotal;
+    return res;
 }
 
 uint64_t _cdecl _strtoui64_l(const char *nptr, char **endptr, int base, locale_t locale)
@@ -799,7 +800,7 @@ u64 CInifile::r_u64(pcstr S, pcstr L) const
 s64 CInifile::r_s64(pcstr S, pcstr L) const
 {
     pcstr C = r_string(S, L);
-    return _atoi64(C);
+    return _atoi64(C).QuadPart;
 }
 
 s8 CInifile::r_s8(pcstr S, pcstr L) const

@@ -2,6 +2,10 @@
 
 #include "ResourceManager.h"
 
+#ifdef USE_DX9
+#include <d3dcompiler.h>
+#endif
+
 #ifdef USE_OGL
 template<GLenum type>
 inline std::pair<GLuint, GLuint> GLCompileShader(pcstr* buffer, size_t size, pcstr name)
@@ -597,9 +601,9 @@ T* CResourceManager::CreateShader(cpcstr name, pcstr filename /*= nullptr*/, u32
 
 #if defined(USE_DX9)
 #   ifdef NDEBUG
-        flags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
+        flags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #   else
-        flags |= D3DXSHADER_PACKMATRIX_ROWMAJOR | (xrDebug::DebuggerIsPresent() ? D3DXSHADER_DEBUG : 0);
+        flags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | (xrDebug::DebuggerIsPresent() ? D3DXSHADER_DEBUG : 0);
 #   endif
 #elif defined(USE_DX11)
 #   ifdef NDEBUG

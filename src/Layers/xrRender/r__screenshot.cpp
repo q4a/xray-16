@@ -46,9 +46,11 @@ IC void MouseRayFromPoint(Fvector& direction, int x, int y, Fmatrix& m_CamMat)
 #if defined(USE_DX9)
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
+#if 0
     if (!Device.b_is_Ready)
         return;
     // Create temp-surface
+    ScratchImage scratch;
     u32* pPixel = nullptr;
     u32* pEnd = nullptr;
     IDirect3DSurface9* pFB;
@@ -103,11 +105,18 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     case IRender::SM_FOR_GAMESAVE:
     {
         // texture
+        /*
         ID3DTexture2D* texture = nullptr;
         hr = D3DXCreateTexture(HW.pDevice, GAMESAVE_SIZE, GAMESAVE_SIZE, 1, 0, D3DFMT_DXT1, D3DPOOL_SCRATCH, &texture);
         if (hr != D3D_OK)
             goto _end_;
         if (nullptr == texture)
+            goto _end_;
+        */
+        ScratchImage resized;
+        hr = Resize(scratch.GetImages(), scratch.GetImageCount(), scratch.GetMetadata(),
+            GAMESAVE_SIZE, GAMESAVE_SIZE, TEX_FILTER_CUBIC, resized);
+        if (FAILED(hr))
             goto _end_;
 
         // resize&convert to surface
@@ -246,6 +255,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
 _end_:
     _RELEASE(pFB);
+#endif
 }
 #elif defined(USE_DX11)
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)

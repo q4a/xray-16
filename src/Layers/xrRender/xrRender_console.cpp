@@ -498,7 +498,7 @@ public:
         Msg("memory usage  mb \t \t video    \t managed      \t system \n");
 
         const float MiB = 1024*1024; // XXX: use it as common enum value (like in X-Ray 2.0)
-        const u32* mem_usage = HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex];
+        const u32* mem_usage = HW._stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex];
 
         float vb_video = mem_usage[D3DPOOL_DEFAULT] / MiB;
         float vb_managed = mem_usage[D3DPOOL_MANAGED] / MiB;
@@ -513,7 +513,7 @@ public:
         float textures_managed = (m_base+m_lmaps)/MiB;
         Msg("textures          \t \t %f \t %f \t %f ", 0.f, textures_managed, 0.f);
 
-        mem_usage = HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget];
+        mem_usage = HW._stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget];
         float rt_video = mem_usage[D3DPOOL_DEFAULT] / MiB;
         float rt_managed = mem_usage[D3DPOOL_MANAGED] / MiB;
         float rt_system = mem_usage[D3DPOOL_SYSTEMMEM] / MiB;

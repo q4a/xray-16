@@ -8,6 +8,8 @@
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4237)
 
+#include <d3d9.h>
+
 #include "xrEngine/vis_common.h"
 #include "xrEngine/Render.h"
 #include "xrEngine/IGame_Level.h"

@@ -3,8 +3,13 @@
 #include "r__pixel_calculator.h"
 #include "Layers/xrRender/FBasicVisual.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_access.hpp"
+
 #if defined(USE_DX9) || defined(USE_DX11)// XXX: support pixel calculator on OpenGL
-#   include <DirectXMath.h>
+//#   include <DirectXMath.h>
 #endif
 
 static constexpr u32 rt_dimensions = 1024;
@@ -42,7 +47,7 @@ static Fvector cmDir [6] = { { 1.f, 0.f, 0.f }, {-1.f, 0.f, 0.f }, { 0.f, 1.f,  
 r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
 {
 #if defined(USE_DX9) || defined(USE_DX11)
-    using namespace DirectX;
+    //using namespace DirectX;
 
     r_aabb_ssa result = {0};
     float area = float(_sqr(rt_dimensions));
@@ -60,8 +65,8 @@ r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
         mView.build_camera_dir(vFrom.invert(cmDir[face]).mul(100.f), cmDir[face], cmNorm[face]);
         aabb.xform(V->vis.box, mView);
 
-        XMMATRIX project = XMMatrixOrthographicOffCenterLH(aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mProject), project);
+        glm::mat4 project = glm::ortho(aabb.vMin.x, aabb.vMax.x, aabb.vMin.y, aabb.vMax.y, aabb.vMin.z, aabb.vMax.z);
+        mProject = *(Fmatrix*)glm::value_ptr(project);
 
         RCache.set_xform_world(Fidentity);
         RCache.set_xform_view(mView);

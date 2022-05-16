@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "fstaticrender_rendertarget.h"
+#include "FStaticRender_RenderTarget.h"
 #include "FStaticRender_Types.h"
 #include "xrEngine/IGame_Persistent.h"
 

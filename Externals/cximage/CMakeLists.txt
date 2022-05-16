@@ -38,6 +38,7 @@ target_include_directories(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${JPEG_INCLUDE_DIRS}
+    ${DXVK_NATIVE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}

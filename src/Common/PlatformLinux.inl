@@ -24,6 +24,10 @@
 #include <utime.h>
 #include <ctime>
 
+#ifndef _WIN32
+#include <d3d9.h>
+#endif
+
 #define _LINUX // for GameSpy
 
 #if !defined(__INTEL_COMPILER)
@@ -150,6 +154,7 @@ inline int xr_unlink(const char *path)
 }
 
 #include <inttypes.h>
+/*
 typedef int32_t BOOL;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
@@ -158,18 +163,21 @@ typedef int32_t LONG;
 typedef int64_t INT64;
 typedef uint64_t UINT64;
 #endif
+*/
+
 
 typedef char* LPSTR;
 typedef char* PSTR;
 typedef char* LPTSTR;
 typedef const char* LPCSTR;
 typedef const char* LPCTSTR;
+typedef unsigned long long int ULARGE_INTEGER;
+/*
 typedef unsigned int UINT;
 typedef long long int LARGE_INTEGER;
-typedef unsigned long long int ULARGE_INTEGER;
 
 typedef wchar_t WCHAR;
-
+*/
 #define WAVE_FORMAT_PCM  0x0001
 
 typedef struct {
@@ -216,15 +224,15 @@ typedef int INT_PTR;
 typedef unsigned int UINT_PTR;
 typedef long LONG_PTR;
 #endif // defined(XR_ARCHITECTURE_X64) || defined(XR_ARCHITECTURE_ARM64) || defined(XR_ARCHITECTURE_E2K)
-
-typedef void* HANDLE;
-typedef void* HMODULE;
-typedef void* PVOID;
-typedef void* LPVOID;
 typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
-typedef long HRESULT;
 typedef long LRESULT;
+typedef void* PVOID;
+/*
+typedef void* HANDLE;
+typedef void* HMODULE;
+typedef void* LPVOID;
+typedef long HRESULT;
 typedef void* HWND;
 typedef void* HDC;
 
@@ -239,7 +247,7 @@ typedef struct tagPOINT {
     long x;
     long y;
 } POINT, *PPOINT, *LPPOINT;
-
+*/
 #define DWORD_PTR UINT_PTR
 #define WM_USER 0x0400
 #define WA_INACTIVE 0
@@ -459,7 +467,7 @@ inline int _mkdir(const char *dir) { return mkdir(dir, S_IRWXU); }
 #define ZeroMemory(p, sz) memset((p), 0, (sz))
 #define CopyMemory(d, s, n) memcpy(d, s, n)
 
-#define RGB(r,g,b) ( ((DWORD)(uint8_t)r)|((DWORD)((uint8_t)g)<<8)|((DWORD)((uint8_t)b)<<16) )
+//#define RGB(r,g,b) ( ((DWORD)(uint8_t)r)|((DWORD)((uint8_t)g)<<8)|((DWORD)((uint8_t)b)<<16) )
 #define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
 #define S_OK 0x00000000
@@ -476,7 +484,7 @@ inline int _mkdir(const char *dir) { return mkdir(dir, S_IRWXU); }
     ((DWORD)(uint8_t)(ch0) | ((DWORD)(uint8_t)(ch1) << 8) |  \
     ((DWORD)(uint8_t)(ch2) << 16) | ((DWORD)(uint8_t)(ch3) << 24 ))
 #endif
-
+/*
 typedef enum _D3DFORMAT {
     D3DFMT_UNKNOWN              =   0,
 
@@ -540,12 +548,12 @@ typedef enum _D3DFORMAT {
     D3DFMT_INDEX32              = 102,
     D3DFMT_Q16W16V16U16         = 110,
     /* Floating point formats */
-    D3DFMT_R16F                 = 111,
+/*    D3DFMT_R16F                 = 111,
     D3DFMT_G16R16F              = 112,
     D3DFMT_A16B16G16R16F        = 113,
 
     /* IEEE formats */
-    D3DFMT_R32F                 = 114,
+/*    D3DFMT_R32F                 = 114,
     D3DFMT_G32R32F              = 115,
     D3DFMT_A32B32G32R32F        = 116,
 
@@ -628,7 +636,7 @@ typedef struct _D3DVERTEXELEMENT9 {
 } D3DVERTEXELEMENT9, *LPD3DVERTEXELEMENT9;
 
 #define MAXD3DDECLLENGTH         64 /* +end marker */
-
+/*
 #define D3DFVF_RESERVED0           0x0001
 #define D3DFVF_POSITION_MASK       0x400E
 #define D3DFVF_XYZ                 0x0002
@@ -776,7 +784,7 @@ typedef enum _D3DRENDERSTATETYPE {
 
     D3DRS_FORCE_DWORD               = 0x7fffffff
 } D3DRENDERSTATETYPE;
-
+*/
 /* Macro to deal with LP64 <=> LLP64 differences in numeric constants with 'l' modifier */
 #ifndef __MSABI_LONG
 # if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
@@ -790,7 +798,7 @@ typedef enum _D3DRENDERSTATETYPE {
 #define D3DCOLORWRITEENABLE_GREEN (__MSABI_LONG(1)<<1)
 #define D3DCOLORWRITEENABLE_BLUE  (__MSABI_LONG(1)<<2)
 #define D3DCOLORWRITEENABLE_ALPHA (__MSABI_LONG(1)<<3)
-
+/*
 typedef enum _D3DTEXTURESTAGESTATETYPE {
     D3DTSS_COLOROP               =  1,
     D3DTSS_COLORARG1             =  2,
@@ -923,7 +931,7 @@ typedef enum _D3DDECLTYPE {
   D3DDECLTYPE_SHORT2    =  6,
   D3DDECLTYPE_SHORT4    =  7,
   /* VS 2.0 */
-  D3DDECLTYPE_UBYTE4N   =  8,
+/*  D3DDECLTYPE_UBYTE4N   =  8,
   D3DDECLTYPE_SHORT2N   =  9,
   D3DDECLTYPE_SHORT4N   = 10,
   D3DDECLTYPE_USHORT2N  = 11,
@@ -934,7 +942,9 @@ typedef enum _D3DDECLTYPE {
   D3DDECLTYPE_FLOAT16_4 = 16,
   D3DDECLTYPE_UNUSED    = 17,
 } D3DDECLTYPE;
+*/
 
+/*
 #define D3DMAXDECLTYPE          D3DDECLTYPE_UNUSED
 
 typedef enum _D3DDECLUSAGE {
@@ -1054,7 +1064,7 @@ typedef struct _D3DRECT {
 } D3DRECT;
 #define D3DRECT_DEFINED
 #endif
-
+*/
 typedef DWORD           FOURCC;
 
 typedef struct _AVIINDEXENTRY {
@@ -1065,7 +1075,7 @@ typedef struct _AVIINDEXENTRY {
 } AVIINDEXENTRY;
 
 typedef void *HIC;
-
+/*
 #define D3DTA_SELECTMASK        0x0000000f
 #define D3DTA_DIFFUSE           0x00000000
 #define D3DTA_CURRENT           0x00000001
@@ -1082,7 +1092,7 @@ typedef void *HIC;
 #define D3DTSS_TCI_CAMERASPACEPOSITION            0x20000
 #define D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR    0x30000
 #define D3DTSS_TCI_SPHEREMAP                      0x40000
-
+*/
 inline BOOL SwitchToThread() { return (0 == sched_yield()); }
 
 #define xr_fs_strlwr(str) str

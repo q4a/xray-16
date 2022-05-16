@@ -46,6 +46,10 @@ void CRenderDevice::Initialize()
         Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_HIDDEN |
             SDL_WINDOW_RESIZABLE;
 
+#ifndef _WIN32 // DXVK-Native
+        flags |= SDL_WINDOW_VULKAN;
+#endif
+
         GEnv.Render->ObtainRequiredWindowFlags(flags);
 
         int icon = IDI_COP;

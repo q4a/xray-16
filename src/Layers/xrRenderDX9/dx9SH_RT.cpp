@@ -127,7 +127,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/
         return;
 
     // OK
-    HW.stats_manager.increment_stats_rtarget(pSurface);
+    HW._stats_manager.increment_stats_rtarget(pSurface);
 #ifdef DEBUG
     Msg("* created RT(%s), %dx%d", Name, w, h);
 #endif
@@ -149,7 +149,7 @@ void CRT::destroy()
 
     _RELEASE(pRT);
 
-    HW.stats_manager.decrement_stats_rtarget(pSurface);
+    HW._stats_manager.decrement_stats_rtarget(pSurface);
     _RELEASE(pSurface);
 }
 

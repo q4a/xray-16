@@ -44,7 +44,7 @@ void VertexStagingBuffer::Create(size_t size, bool allowReadBack /*= false*/)
     R_CHK(HW.pDevice->CreateVertexBuffer(size, dwUsage, 0, D3DPOOL_MANAGED, &m_DeviceBuffer, nullptr));
     VERIFY(m_DeviceBuffer);
 
-    HW.stats_manager.increment_stats_vb(m_DeviceBuffer);
+    HW._stats_manager.increment_stats_vb(m_DeviceBuffer);
     AddRef();
 }
 
@@ -85,7 +85,7 @@ VertexBufferHandle VertexStagingBuffer::GetBufferHandle() const
 
 void VertexStagingBuffer::Destroy()
 {
-    HW.stats_manager.decrement_stats_vb(m_DeviceBuffer);
+    HW._stats_manager.decrement_stats_vb(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
     m_DeviceBuffer = nullptr;
 }
@@ -140,7 +140,7 @@ void IndexStagingBuffer::Create(size_t size, bool allowReadBack /*= false*/, boo
         dwUsage |= D3DUSAGE_SOFTWAREPROCESSING;
     R_CHK(HW.pDevice->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, managed ? D3DPOOL_MANAGED : D3DPOOL_DEFAULT, &m_DeviceBuffer, NULL));
 
-    HW.stats_manager.increment_stats_ib(m_DeviceBuffer);
+    HW._stats_manager.increment_stats_ib(m_DeviceBuffer);
     AddRef();
 }
 
@@ -236,7 +236,7 @@ void VertexStreamBuffer::Create(size_t size)
         NULL));
     VERIFY(m_DeviceBuffer);
     AddRef();
-    HW.stats_manager.increment_stats_vb(m_DeviceBuffer);
+    HW._stats_manager.increment_stats_vb(m_DeviceBuffer);
 }
 
 void VertexStreamBuffer::Destroy()
@@ -244,7 +244,7 @@ void VertexStreamBuffer::Destroy()
     if (m_DeviceBuffer == nullptr)
         return;
 
-    HW.stats_manager.decrement_stats_vb(m_DeviceBuffer);
+    HW._stats_manager.decrement_stats_vb(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
 }
 
@@ -291,7 +291,7 @@ void IndexStreamBuffer::Create(size_t size)
         NULL));
     VERIFY(m_DeviceBuffer);
     AddRef();
-    HW.stats_manager.increment_stats_ib(m_DeviceBuffer);
+    HW._stats_manager.increment_stats_ib(m_DeviceBuffer);
 }
 
 void IndexStreamBuffer::Destroy()
@@ -299,7 +299,7 @@ void IndexStreamBuffer::Destroy()
     if (m_DeviceBuffer == nullptr)
         return;
 
-    HW.stats_manager.decrement_stats_ib(m_DeviceBuffer);
+    HW._stats_manager.decrement_stats_ib(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
 }
 
