@@ -94,6 +94,7 @@ public:
     ref_texture t_noise_mipped;
 
     ref_texture t_base;
+    GLuint pFB;
 private:
     // OCCq
     ref_shader s_occq;
