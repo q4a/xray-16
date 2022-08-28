@@ -256,7 +256,7 @@ void glState::UpdateSamplerState(u32 stage, u32 name, u32 value)
         CHK_GL(glSamplerParameteri(m_samplerArray[stage], GL_TEXTURE_MAX_LEVEL, value));
         break;
     case D3DSAMP_MAXANISOTROPY: /* DWORD maximum anisotropy */
-        CHK_GL(glSamplerParameteri(m_samplerArray[stage], GL_TEXTURE_MAX_ANISOTROPY_EXT, value));
+        //CHK_GL(glSamplerParameteri(m_samplerArray[stage], GL_TEXTURE_MAX_ANISOTROPY_EXT, value));
         break;
     case XRDX11SAMP_COMPARISONFILTER:
         CHK_GL(glSamplerParameteri(m_samplerArray[stage], GL_TEXTURE_COMPARE_MODE, value ? (GLint)
