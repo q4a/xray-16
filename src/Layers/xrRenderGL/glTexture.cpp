@@ -139,9 +139,26 @@ _DDS:
                            tex_extent.x, tex_extent.y));
             break;
         case gli::TARGET_3D:
-            CHK_GL(glTexStorage3D(target, static_cast<GLint>(texture.levels()), format.Internal,
-                           tex_extent.x, tex_extent.y, tex_extent.z));
+        {
+            if (target == GL_TEXTURE_3D)
+            {
+                GLsizei width = tex_extent.x;
+                GLsizei height = tex_extent.y;
+                GLsizei depth = tex_extent.z;
+                for (size_t i = 0; i < texture.levels(); i++) {
+                    glTexImage3D(target, i, format.Internal, width, height, depth, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+                    width = std::max(1, (width / 2));
+                    height = std::max(1, (height / 2));
+                    depth = std::max(1, (depth / 2));
+                }
+            }
+            else
+            {
+                CHK_GL(glTexStorage3D(target, static_cast<GLint>(texture.levels()), format.Internal,
+                               tex_extent.x, tex_extent.y, tex_extent.z));
+            }
             break;
+        }
         default:
             NODEFAULT;
             break;
