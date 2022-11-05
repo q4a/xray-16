@@ -75,7 +75,7 @@ void UIMapLegend::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 // =================================================================================================
 
 UIMapLegendItem::UIMapLegendItem() {}
-UIMapLegendItem::~UIMapLegendItem() {}
+
 void UIMapLegendItem::init_from_xml(CUIXml& xml, int index)
 {
     CUIXmlInit::InitWindow(xml, "item", index, this);

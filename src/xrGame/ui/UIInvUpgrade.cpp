@@ -21,7 +21,7 @@
 
 #include "UIInventoryUpgradeWnd.h"
 
-UIUpgrade::UIUpgrade(CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder) : m_point(NULL)
+UIUpgrade::UIUpgrade(CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder) : m_point(nullptr)
 {
     VERIFY(parent_wnd);
     m_parent_wnd = parent_wnd;

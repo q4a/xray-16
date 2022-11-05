@@ -55,7 +55,6 @@ CUIWpnParams::CUIWpnParams()
     AttachChild(&m_progressRPM);
 }
 
-CUIWpnParams::~CUIWpnParams() {}
 bool CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 {
     if (!xml_doc.NavigateToNode("wpn_params", 0))
@@ -253,7 +252,6 @@ CUIConditionParams::CUIConditionParams()
     AttachChild(&m_text);
 }
 
-CUIConditionParams::~CUIConditionParams() {}
 bool CUIConditionParams::InitFromXml(CUIXml& xml_doc)
 {
     if (!xml_doc.NavigateToNode("condition_params", 0))

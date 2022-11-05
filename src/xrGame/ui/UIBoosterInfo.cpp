@@ -196,7 +196,6 @@ UIBoosterInfoItem::UIBoosterInfoItem()
     m_texture_plus._set("");
 }
 
-UIBoosterInfoItem::~UIBoosterInfoItem() {}
 void UIBoosterInfoItem::Init(CUIXml& xml, LPCSTR section)
 {
     CUIXmlInit::InitWindow(xml, section, 0, this);

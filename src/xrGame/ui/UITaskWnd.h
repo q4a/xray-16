@@ -18,7 +18,7 @@ class UITaskListWnd;
 class UIMapLegend;
 class UIHint;
 
-class CUITaskWnd : public CUIWindow, public CUIWndCallback
+class CUITaskWnd final : public CUIWindow, public CUIWndCallback
 {
 private:
     typedef CUIWindow inherited;
@@ -120,7 +120,7 @@ private:
     void OnShowQuestNpcs(CUIWindow*, void*);
 };
 
-class CUITaskItem : public CUIWindow
+class CUITaskItem final : public CUIWindow
 {
 private:
     typedef CUIWindow inherited;
@@ -130,7 +130,6 @@ private:
 
 public:
     CUITaskItem();
-    virtual ~CUITaskItem() = default;
 
     virtual void OnFocusReceive();
     virtual void OnFocusLost();

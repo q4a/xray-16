@@ -220,7 +220,6 @@ CUIMpServerAdm::CUIMpServerAdm()
     m_pGameLimitsSelectionWnd->Show(false);
 }
 
-CUIMpServerAdm::~CUIMpServerAdm() {}
 void CUIMpServerAdm::Init(CUIXml& xml_doc)
 {
     CUIXmlInit::InitWindow(xml_doc, "server_adm", 0, this);

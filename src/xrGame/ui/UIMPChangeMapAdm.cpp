@@ -33,7 +33,6 @@ CUIMpChangeMapAdm::CUIMpChangeMapAdm()
     AttachChild(btn_ok);
 }
 
-CUIMpChangeMapAdm::~CUIMpChangeMapAdm() {}
 void CUIMpChangeMapAdm::Init(CUIXml& xml_doc)
 {
     CUIXmlInit::InitWindow(xml_doc, "change_map_adm", 0, this);
