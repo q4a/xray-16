@@ -76,10 +76,6 @@ CUIRankFaction::CUIRankFaction(shared_str const& faction_id)
     m_prev_sn = 0xff;
 }
 
-CUIRankFaction::~CUIRankFaction()
-{
-}
-
 float CUIRankFaction::get_faction_power() const
 {
     return m_faction_state.power;

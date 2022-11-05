@@ -13,7 +13,7 @@ class CUIStatic;
 
 class UITeamState;
 
-class UITeamHeader : public CUIWindow
+class UITeamHeader final : public CUIWindow
 {
 private:
     typedef CUIWindow inherited;
@@ -34,7 +34,6 @@ private:
 
 public:
     UITeamHeader(UITeamState const* const parent);
-    virtual ~UITeamHeader();
 
     void Init(CUIXml& uiXml, LPCSTR path);
     virtual void Update();

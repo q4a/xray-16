@@ -6,7 +6,6 @@
 
 UITeamHeader::UITeamHeader(UITeamState const* const parent)
     : CUIWindow("UITeamHeader"), m_parent(parent), m_team_header_root() {}
-UITeamHeader::~UITeamHeader() {}
 
 void UITeamHeader::Update()
 {
