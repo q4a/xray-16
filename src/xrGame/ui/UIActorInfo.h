@@ -67,5 +67,6 @@ public:
     CUIStatic* m_text2;
     CUIStatic* m_text3;
 public:
+    CUIActorStaticticDetail() : CUIWindow("CUIActorStaticticDetail") {}
     void Init(CUIXml* xml, LPCSTR path, int xml_idx);
 };

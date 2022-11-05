@@ -4,8 +4,10 @@
 #include "xrUICore/Static/UIStatic.h"
 #include "xrCore/buffer_vector.h"
 
-UITeamHeader::UITeamHeader(UITeamState const* const parent) : m_parent(parent), m_team_header_root() {}
+UITeamHeader::UITeamHeader(UITeamState const* const parent)
+    : CUIWindow("UITeamHeader"), m_parent(parent), m_team_header_root() {}
 UITeamHeader::~UITeamHeader() {}
+
 void UITeamHeader::Update()
 {
     inherited::Update();

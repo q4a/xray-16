@@ -14,8 +14,8 @@ class CBoneInstance;
 class CUIArtefactDetectorBase
 {
 public:
-    virtual ~CUIArtefactDetectorBase(){};
-    virtual void update(){};
+    virtual ~CUIArtefactDetectorBase() {};
+    virtual void update() {};
 };
 
 class CUIDetectorWave : public CUIFrameLineWnd
@@ -77,6 +77,8 @@ class CUIArtefactDetectorElite : public CUIArtefactDetectorBase, public CUIWindo
     void GetUILocatorMatrix(Fmatrix& _m);
 
 public:
+    CUIArtefactDetectorElite() : CUIWindow("CUIArtefactDetectorElite") {}
+
     virtual void update();
     virtual void Draw();
 

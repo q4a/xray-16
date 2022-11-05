@@ -17,6 +17,7 @@ u32 const color_red = 0xffFF0000;
 u32 const color_clear = 0xffEEEEFF;
 
 CUIRankFaction::CUIRankFaction()
+    : CUIWindow("CUIRankFaction")
 {
     m_sn = nullptr;
     m_name = nullptr;
@@ -45,6 +46,7 @@ CUIRankFaction::CUIRankFaction()
 }
 
 CUIRankFaction::CUIRankFaction(shared_str const& faction_id)
+    : CUIWindow("CUIRankFaction")
 {
     m_faction_state = faction_id;
 

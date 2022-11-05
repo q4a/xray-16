@@ -42,7 +42,7 @@ SLuaWpnParams::~SLuaWpnParams() {}
 
 // =====================================================================
 
-CUIWpnParams::CUIWpnParams()
+CUIWpnParams::CUIWpnParams() : CUIWindow("CUIWpnParams")
 {
     AttachChild(&m_textAccuracy);
     AttachChild(&m_textDamage);
@@ -247,7 +247,7 @@ bool CUIWpnParams::Check(const shared_str& wpn_section)
 
 // -------------------------------------------------------------------------------------------------
 
-CUIConditionParams::CUIConditionParams()
+CUIConditionParams::CUIConditionParams() : CUIWindow("CUIConditionParams")
 {
     AttachChild(&m_progress);
     AttachChild(&m_text);

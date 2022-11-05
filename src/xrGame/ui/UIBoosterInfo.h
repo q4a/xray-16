@@ -12,6 +12,7 @@ class CUIBoosterInfo : public CUIWindow
 public:
     CUIBoosterInfo();
     virtual ~CUIBoosterInfo();
+
     bool InitFromXml(CUIXml& xml);
     void SetInfo(const shared_str& section);
 

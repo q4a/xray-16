@@ -4,6 +4,7 @@
 class CUIStatic;
 class CUIXml;
 class CUIStatic;
+
 class CUIRankIndicator : public CUIWindow
 {
     enum
@@ -16,6 +17,7 @@ class CUIRankIndicator : public CUIWindow
 public:
     CUIRankIndicator();
     virtual ~CUIRankIndicator();
+
     void InitFromXml(CUIXml& xml_doc);
     void SetRank(u8 team, u8 rank);
 };
