@@ -17,7 +17,8 @@
 #include "UIPdaMsgListItem.h"
 #include "xrGame/game_type.h"
 
-CUIMessagesWindow::CUIMessagesWindow() : m_pChatLog(nullptr), m_pChatWnd(nullptr), m_pGameLog(nullptr)
+CUIMessagesWindow::CUIMessagesWindow()
+    : CUIWindow("CUIMessagesWindow"), m_pChatLog(nullptr), m_pChatWnd(nullptr), m_pGameLog(nullptr)
 {
     Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
 }

@@ -61,6 +61,7 @@ public:
 public:
     CUITaskWnd(UIHint* hint);
     virtual ~CUITaskWnd();
+
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     bool Init();
     virtual void Update();

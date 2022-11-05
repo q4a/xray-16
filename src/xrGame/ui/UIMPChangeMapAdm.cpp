@@ -10,7 +10,7 @@
 #include "xrEngine/XR_IOConsole.h"
 #include "UIGameCustom.h"
 
-CUIMpChangeMapAdm::CUIMpChangeMapAdm()
+CUIMpChangeMapAdm::CUIMpChangeMapAdm() : CUIWindow("CUIMpChangeMapAdm")
 {
     map_pic = xr_new<CUIStatic>();
     map_pic->SetAutoDelete(true);

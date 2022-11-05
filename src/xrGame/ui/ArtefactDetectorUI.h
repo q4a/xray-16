@@ -77,6 +77,8 @@ class CUIArtefactDetectorElite final : public CUIArtefactDetectorBase, public CU
     void GetUILocatorMatrix(Fmatrix& _m);
 
 public:
+    CUIArtefactDetectorElite() : CUIWindow("CUIArtefactDetectorElite") {};
+
     void update() override;
     void Draw() override;
 

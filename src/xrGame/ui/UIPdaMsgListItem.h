@@ -6,6 +6,8 @@ class CUIPdaMsgListItem final : public CUIColorAnimConrollerContainer
     using inherited = CUIColorAnimConrollerContainer;
 
 public:
+    CUIPdaMsgListItem() : CUIColorAnimConrollerContainer("CUIPdaMsgListItem") {}
+
     void InitPdaMsgListItem(const Fvector2& size);
     void SetFont(CGameFont* pFont) override;
 
