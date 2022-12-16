@@ -87,17 +87,10 @@ SCRIPT_EXPORT(CUIWindow, (),
     using namespace luabind;
     using namespace luabind::policy;
 
-    // We don't change game assets.
-    // This class allowes original game scripts to not specify the window name.
-    class CUIWindowScript : public CUIWindow
-    {
-    public:
-        CUIWindowScript() : CUIWindow("CUIWindowScript") {}
-    };
-
     module(luaState)
     [
-        class_<CUIWindow>("CUIWindowBase")
+        class_<CUIWindow>("CUIWindow")
+            .def(constructor<>())
             .def(constructor<pcstr>())
             .def("AttachChild", &CUIWindow::AttachChild, adopt<2>())
             .def("DetachChild", &CUIWindow::DetachChild)
@@ -153,11 +146,8 @@ SCRIPT_EXPORT(CUIWindow, (),
             .def("SetFont", &CUIWindow::SetFont)
             .def("GetFont", &CUIWindow::GetFont)
 
-            .def("WindowName", +[](CUIWindow* self) -> pcstr { return self->WindowName().c_str(); })
-            .def("SetWindowName", &CUIWindow::SetWindowName),
-
-        class_<CUIWindowScript, CUIWindow>("CUIWindow")
-            .def(constructor<>())
+            .def("WindowName", &CUIWindow::WindowName_script)
+            .def("SetWindowName", &CUIWindow::SetWindowName)
     ];
 });
 

@@ -14,6 +14,7 @@
 class XRUICORE_API CUIWindow : public CUISimpleWindow
 {
 public:
+    CUIWindow();
     CUIWindow(pcstr window_name);
     virtual ~CUIWindow();
 
@@ -123,8 +124,9 @@ public:
     IC void SetAutoDelete(bool auto_delete) { m_bAutoDelete = auto_delete; }
 
     // Name of the window
-    shared_str WindowName() const { return m_windowName; }
+    const shared_str WindowName() const { return m_windowName; }
     void SetWindowName(pcstr wn) { m_windowName = wn; }
+    pcstr WindowName_script() { return m_windowName.c_str(); }
 
     CUIWindow* FindChild(const shared_str name);
 
