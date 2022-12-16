@@ -37,14 +37,6 @@ Frect	get_texture_rect(LPCSTR icon_name)
 // clang-format off
 SCRIPT_EXPORT(CUIWindow, (),
 {
-    // We don't change game assets.
-    // This class allowed original game scripts to not specify the window name.
-    class CUIWindowScript : public CUIWindow
-    {
-    public:
-        CUIWindowScript() : CUIWindow("CUIWindowScript") {}
-    };
-
     module(luaState)
     [
         def("GetARGB", &GetARGB), def("GetFontSmall", &GetFontSmall), def("GetFontMedium", &GetFontMedium),
@@ -93,7 +85,8 @@ SCRIPT_EXPORT(CUIWindow, (),
             return CUITextureMaster::FindItem(name, defaultName, outValue);
         }),
 
-        class_<CUIWindow>("CUIWindowBase")
+        class_<CUIWindow>("CUIWindow")
+            .def(constructor<>())
             .def(constructor<pcstr>())
             .def("AttachChild", &CUIWindow::AttachChild, adopt<2>())
             .def("DetachChild", &CUIWindow::DetachChild)
@@ -149,11 +142,8 @@ SCRIPT_EXPORT(CUIWindow, (),
             .def("SetFont", &CUIWindow::SetFont)
             .def("GetFont", &CUIWindow::GetFont)
 
-            .def("WindowName", +[](CUIWindow* self) -> pcstr { return self->WindowName().c_str(); })
-            .def("SetWindowName", &CUIWindow::SetWindowName),
-
-        class_<CUIWindowScript, CUIWindow>("CUIWindow")
-            .def(constructor<>())
+            .def("WindowName", &CUIWindow::WindowName_script)
+            .def("SetWindowName", &CUIWindow::SetWindowName)
     ];
 });
 
