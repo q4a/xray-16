@@ -3,6 +3,7 @@
 #include "Layers/xrRender/ShaderResourceTraits.h"
 #include "xrCore/FileCRC32.h"
 
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX shader_compile
 template <typename T>
 static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name,
     T*& result, bool const disasm)
@@ -45,21 +46,24 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
 
     return _hr;
 }
+#endif
 
 inline HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name,
     void*& result, bool const disasm)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX shader_compile
     if (pTarget[0] == 'p')
         return create_shader(pTarget, buffer, buffer_size, file_name, (SPS*&)result, disasm);
 
     if (pTarget[0] == 'v')
         return create_shader(pTarget, buffer, buffer_size, file_name, (SVS*&)result, disasm);
+#endif
 
     NODEFAULT;
     return E_FAIL;
 }
 
-
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX ID3DXInclude
 class includer : public ID3DXInclude
 {
 public:
@@ -94,6 +98,7 @@ public:
         return D3D_OK;
     }
 };
+#endif
 
 static inline bool match_shader_id(
     LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
@@ -247,6 +252,7 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
 
     if (FAILED(_result))
     {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX ID3DXInclude
         includer Includer;
         LPD3DXBUFFER pShaderBuf = nullptr;
         LPD3DXBUFFER pErrorBuf = nullptr;
@@ -281,6 +287,7 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
             else
                 Msg("Can't compile shader hr=0x%08x", _result);
         }
+#endif
     }
 
     return _result;

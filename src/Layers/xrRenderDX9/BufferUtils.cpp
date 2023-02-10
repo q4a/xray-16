@@ -8,17 +8,29 @@ enum
 
 u32 GetFVFVertexSize(u32 FVF)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetFVFVertexSize
     return D3DXGetFVFVertexSize(FVF);
+#else
+    return 0;
+#endif
 }
 
 u32 GetDeclVertexSize(const VertexElement* decl, u32 Stream)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetDeclVertexSize
     return D3DXGetDeclVertexSize(decl, Stream);
+#else
+    return 0;
+#endif
 }
 
 u32 GetDeclLength(const VertexElement* decl)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetDeclLength
     return D3DXGetDeclLength(decl);
+#else
+    return 0;
+#endif
 }
 
 //-----------------------------------------------------------------------------

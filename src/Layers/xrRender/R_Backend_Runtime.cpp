@@ -8,7 +8,7 @@
 #include "Layers/xrRenderDX11/StateManager/dx11ShaderResourceStateCache.h"
 #endif
 
-#if defined(USE_DX9) || defined(USE_DX11)
+#if defined(XR_PLATFORM_WINDOWS) && (defined(USE_DX9) || defined(USE_DX11))
 #include <DirectXMath.h>
 #endif
 
@@ -162,6 +162,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     if (count > HW.Caps.geometry.dwClipPlanes)
         count = HW.Caps.geometry.dwClipPlanes;
 
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX XMMATRIX
     using namespace DirectX;
 
     const XMMATRIX transform = XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform));
@@ -176,6 +177,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
         XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
         CHK_DX(HW.pDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
     }
+#endif
 
     // Enable them
     u32 e_mask = (1 << count) - 1;

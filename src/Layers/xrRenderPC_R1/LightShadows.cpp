@@ -5,6 +5,14 @@
 #include "Layers/xrRender/FBasicVisual.h"
 #include "xrEngine/CustomHUD.h"
 
+#if defined(XR_ARCHITECTURE_X86) || defined(XR_ARCHITECTURE_X64) || defined(XR_ARCHITECTURE_E2K)
+#include <xmmintrin.h>
+#elif defined(XR_ARCHITECTURE_ARM) || defined(XR_ARCHITECTURE_ARM64)
+#include "sse2neon/sse2neon.h"
+#else
+#error Add your platform here
+#endif
+
 const float S_distance = 144;
 const float S_distance2 = S_distance * S_distance;
 const float S_ideal_size = 4.f; // ideal size for the object
