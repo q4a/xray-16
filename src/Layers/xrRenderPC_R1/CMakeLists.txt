@@ -134,6 +134,9 @@ set(SRC_FILES
     "stdafx.cpp"
 )
 
+# Fix for dx9HW.h. It has weird member: stats_manager stats_manager;
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+
 group_sources(SRC_FILES)
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
