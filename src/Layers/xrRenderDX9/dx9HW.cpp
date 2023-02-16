@@ -91,10 +91,17 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
     R_CHK(pD3D->GetAdapterIdentifier(DevAdapter, 0, &adapterID));
     Msg("* GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
 
+#if defined(USE_MESA_NINE)
+    const u16 driverProduct    = HIWORD(adapterID.DriverVersionHighPart);
+    const u16 driverVersion    = LOWORD(adapterID.DriverVersionHighPart);
+    const u16 driverSubVersion = HIWORD(adapterID.DriverVersionLowPart);
+    const u16 driverBuild      = LOWORD(adapterID.DriverVersionLowPart);
+#else
     const u16 driverProduct    = HIWORD(adapterID.DriverVersion.HighPart);
     const u16 driverVersion    = LOWORD(adapterID.DriverVersion.HighPart);
     const u16 driverSubVersion = HIWORD(adapterID.DriverVersion.LowPart);
     const u16 driverBuild      = LOWORD(adapterID.DriverVersion.LowPart);
+#endif
     Msg("* GPU driver: %d.%d.%d.%d", u32(driverProduct), u32(driverVersion), u32(driverSubVersion), u32(driverBuild));
 
     Caps.id_vendor = adapterID.VendorId;
