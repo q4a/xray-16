@@ -258,19 +258,21 @@ if (NOT WIN32)
 
     if (USE_MESA_NINE) # for Gallium Nine
         message("Using Gallium Nine for native D3D9 API")
+        add_definitions(-DUSE_MESA_NINE)
 
         #sudo apt install libd3dadapter9-mesa-dev
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(D3D REQUIRED IMPORTED_TARGET d3d)
 
-        add_subdirectory(nine-native)
+        add_subdirectory(Externals/nine-native)
         set(NINE_NATIVE_INCLUDE_DIRS
             "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include"
             "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/D3D9"
         )
         include_directories("${NINE_NATIVE_INCLUDE_DIRS}")
     else() # for DXVK Native
-        message("Using DXVK-native for D3D9 API")
+        message("Using DXVK Native for D3D9 API")
+        add_definitions(-DUSE_DXVK_NATIVE)
 
         include(ExternalProject)
         ExternalProject_Add(dxvk-native
