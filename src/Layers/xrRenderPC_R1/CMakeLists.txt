@@ -1,27 +1,141 @@
 project(xrRenderPC_R1)
 
 set(SRC_FILES
-    "FStaticRender_Blenders.cpp"
+    "../xrRenderDX9/BufferUtils.cpp"
+    "../xrRenderDX9/dx9HW.cpp"
+    "../xrRenderDX9/dx9HWCaps.cpp"
+    "../xrRenderDX9/dx9ResourceManager_Resources.cpp"
+    "../xrRenderDX9/dx9r_constants_cache.cpp"
+    "../xrRenderDX9/dx9SH_RT.cpp"
+    "../xrRender/Animation.cpp"
+    "../xrRender/Blender.cpp"
+    "../xrRender/Blender_Recorder.cpp"
+    "../xrRender/blenders/Blender_BmmD.cpp"
+    "../xrRender/blenders/Blender_detail_still.cpp"
+    "../xrRender/blenders/Blender_Editor_Selection.cpp"
+    "../xrRender/blenders/Blender_Editor_Wire.cpp"
+    "../xrRender/blenders/Blender_Lm(EbB).cpp"
+    "../xrRender/blenders/Blender_Model_EbB.cpp"
+    "../xrRender/blenders/Blender_Particle.cpp"
+    "../xrRender/Blender_Recorder_R2.cpp"
+    "../xrRender/Blender_Recorder_StandartBinding.cpp"
+    "../xrRender/blenders/Blender_Screen_SET.cpp"
+    "../xrRender/blenders/Blender_tree.cpp"
+    "../xrRender/ColorMapManager.cpp"
+    "../xrRender/D3DUtils.cpp"
+    "../xrRender/D3DXRenderBase.cpp"
+    "../xrRender/DetailManager.cpp"
+    "../xrRender/DetailManager_CACHE.cpp"
+    "../xrRender/DetailManager_Decompress.cpp"
+    "../xrRender/DetailManager_VS.cpp"
+    "../xrRender/DetailModel.cpp"
+    "../xrRender/du_box.cpp"
+    "../xrRender/du_cone.cpp"
+    "../xrRender/du_cylinder.cpp"
+    "../xrRender/du_sphere.cpp"
+    "../xrRender/du_sphere_part.cpp"
+    "../xrRender/dxConsoleRender.cpp"
+    "../xrRender/dxDebugRender.cpp"
+    "../xrRender/dxEnvironmentRender.cpp"
+    "../xrRender/dxFontRender.cpp"
+    "../xrRender/dxImGuiRender.cpp"
+    "../xrRender/dxLensFlareRender.cpp"
+    "../xrRender/dxObjectSpaceRender.cpp"
+    "../xrRender/dxParticleCustom.cpp"
+    "../xrRender/dxRainRender.cpp"
+    "../xrRender/dxRenderFactory.cpp"
+    "../xrRender/dxStatGraphRender.cpp"
+    "../xrRender/dxThunderboltDescRender.cpp"
+    "../xrRender/dxThunderboltRender.cpp"
+    "../xrRender/dxUIRender.cpp"
+    "../xrRender/dxUISequenceVideoItem.cpp"
+    "../xrRender/dxUIShader.cpp"
+    "../xrRender/dxWallMarkArray.cpp"
+    "../xrRender/ETextureParams.cpp"
+    "../xrRender/FBasicVisual.cpp"
+    "../xrRender/FHierrarhyVisual.cpp"
+    "../xrRender/FLOD.cpp"
+    "../xrRender/FProgressive.cpp"
+    "../xrRender/FSkinned.cpp"
+    "../xrRender/FTreeVisual.cpp"
+    "../xrRender/FVisual.cpp"
+    "../xrRender/HOM.cpp"
+    "../xrRender/light.cpp"
+    "../xrRender/LightTrack.cpp"
+    "../xrRender/Light_DB.cpp"
+    "../xrRender/Light_Package.cpp"
+    "../xrRender/ModelPool.cpp"
+    "../xrRender/NvTriStrip.cpp"
+    "../xrRender/NvTriStripObjects.cpp"
+    "../xrRender/occRasterizer.cpp"
+    "../xrRender/occRasterizer_core.cpp"
+    "../xrRender/ParticleEffect.cpp"
+    "../xrRender/ParticleEffectDef.cpp"
+    "../xrRender/ParticleGroup.cpp"
+    "../xrRender/PSLibrary.cpp"
+    "../xrRender/ResourceManager.cpp"
+    "../xrRender/ResourceManager_Loader.cpp"
+    "../xrRender/ResourceManager_Reset.cpp"
+    "../xrRender/ResourceManager_Resources.cpp"
+    "../xrRender/ResourceManager_Scripting.cpp"
+    "../xrRender/R_Backend.cpp"
+    "../xrRender/R_Backend_DBG.cpp"
+    "../xrRender/R_Backend_hemi.cpp"
+    "../xrRender/R_Backend_Runtime.cpp"
+    "../xrRender/R_Backend_tree.cpp"
+    "../xrRender/R_Backend_xform.cpp"
+    "../xrRender/r_constants.cpp"
+    "../xrRender/R_DStreams.cpp"
+    "../xrRender/r__dsgraph_build.cpp"
+    "../xrRender/r__dsgraph_render.cpp"
+    "../xrRender/r__dsgraph_render_lods.cpp"
+    "../xrRender/r__screenshot.cpp"
+    "../xrRender/r__sector.cpp"
+    "../xrRender/r__sector_detect.cpp"
+    "../xrRender/r__sector_traversal.cpp"
+    "../xrRender/Shader.cpp"
+    "../xrRender/SH_Atomic.cpp"
+    "../xrRender/SH_Constant.cpp"
+    "../xrRender/SH_Matrix.cpp"
+    "../xrRender/SH_Texture.cpp"
+    "../xrRender/SkeletonAnimated.cpp"
+    "../xrRender/SkeletonCustom.cpp"
+    "../xrRender/SkeletonRigid.cpp"
+    "../xrRender/SkeletonX.cpp"
+    "../xrRender/SkeletonXSkinXW_CPP.cpp"
+    "../xrRender/SkeletonXSkinXW_SSE.cpp"
+    "../xrRender/stats_manager.cpp"
+    "../xrRender/Texture.cpp"
+    "../xrRender/TextureDescrManager.cpp"
+    "../xrRender/tss_def.cpp"
+    "../xrRender/VertexCache.cpp"
+    "../xrRender/WallmarksEngine.cpp"
+    "../xrRender/xrRender_console.cpp"
+    "../xrRender/xrStripify.cpp"
+    "../xrRender/xr_effgamma.cpp"
+    "../xrRender/blenders/BlenderDefault.cpp"
+    "../xrRender/blenders/Blender_Blur.cpp"
+    "../xrRender/blenders/Blender_default_aref.cpp"
+    "../xrRender/blenders/Blender_LaEmB.cpp"
+    "../xrRender/blenders/Blender_Model.cpp"
+    "../xrRender/blenders/Blender_Screen_GRAY.cpp"
+    "../xrRender/blenders/Blender_Shadow_World.cpp"
+    "../xrRender/blenders/Blender_Vertex.cpp"
+    "../xrRender/blenders/Blender_Vertex_aref.cpp"
     "FStaticRender.cpp"
-    "FStaticRender_DetectSector.cpp"
-    "FStaticRender.h"
+    "FStaticRender_Blenders.cpp"
     "FStaticRender_Loader.cpp"
     "FStaticRender_RenderTarget.cpp"
-    "FStaticRender_RenderTarget.h"
     "FStaticRender_Shaders.cpp"
-    "FStaticRender_Types.h"
     "GlowManager.cpp"
-    "GlowManager.h"
     "LightPPA.cpp"
-    "LightPPA.h"
     "LightProjector.cpp"
-    "LightProjector.h"
     "LightShadows.cpp"
-    "LightShadows.h"
     "stdafx.cpp"
-    "stdafx.h"
-    "xrRender_R1.cpp"
 )
+
+# Fix for dx9HW.h. It has weird member: stats_manager stats_manager;
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 
 group_sources(SRC_FILES)
 
@@ -29,10 +143,13 @@ add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../xrRender/blenders
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/Externals/luabind
     ${CMAKE_SOURCE_DIR}/sdk/include
     ${SDL2_INCLUDE_DIRS}
+    ${DXVK_NATIVE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -45,12 +162,15 @@ target_link_libraries(${PROJECT_NAME}
     xrScriptEngine
     xrAPI
     xrMiscMath
+    xrImGui
     ${SDL2_LIBRARIES}
 )
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
     -DXRRENDER_R1_EXPORTS
+    -DUSE_DX9
+    -DNO_XR_VDECLARATOR
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

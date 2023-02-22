@@ -81,7 +81,7 @@ jobs:
       if: ${{ matrix.Platform == 'x64' }}
       run: |
           sudo apt-get update -qq
-          sudo apt-get install -qq -y libsdl2-dev libglew-dev liblzo2-dev libjpeg-dev &&
+          sudo apt-get install -qq -y meson libsdl2-dev libglew-dev liblzo2-dev libjpeg-dev &&
           sudo apt-get install -qq -y libopenal-dev libogg-dev libtheora-dev libvorbis-dev
 
     - name: Install x86 packages
@@ -89,7 +89,7 @@ jobs:
       run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update -qq
-          sudo apt-get install -qq -y libsdl2-dev:i386 libglew-dev:i386 liblzo2-dev:i386 libjpeg-dev:i386 &&
+          sudo apt-get install -qq -y meson libsdl2-dev:i386 libglew-dev:i386 liblzo2-dev:i386 libjpeg-dev:i386 &&
           sudo apt-get install -qq -y libopenal-dev:i386 libogg-dev:i386 libtheora-dev:i386 libvorbis-dev:i386
 
     - name: Install GCC x64
@@ -187,7 +187,7 @@ jobs:
       with:
         arch: ${{ matrix.Platform }}
         branch: 'latest-stable'
-        packages: build-base cmake mold sdl2-dev glew-dev lzo-dev libjpeg-turbo-dev openal-soft-dev libogg-dev libtheora-dev libvorbis-dev
+        packages: build-base cmake meson mold sdl2-dev glew-dev lzo-dev libjpeg-turbo-dev openal-soft-dev libogg-dev libtheora-dev libvorbis-dev
 
     - name: Run CMake x64
       if: ${{ matrix.Platform == 'x86_64' }}

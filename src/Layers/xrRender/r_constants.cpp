@@ -68,6 +68,7 @@ ref_constant R_constant_table::get(const shared_str& S, u16 type /*= u16(-1)*/)
 #ifdef USE_DX9
 BOOL R_constant_table::parse(void* _desc, u32 destination)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX shader_compile
     D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
     D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)((u8*)(desc) + desc->ConstantInfo);
     u8* ptr = (u8*)(desc);
@@ -190,6 +191,7 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
         }
     }
     std::sort(table.begin(), table.end(), p_sort);
+#endif
     return TRUE;
 }
 #endif // USE_DX9

@@ -24,19 +24,34 @@ CHW::~CHW()
 
 void CHW::OnAppActivate()
 {
+#if defined(XR_PLATFORM_WINDOWS)
     if (!DevPP.Windowed)
     {
         ShowWindow(DevPP.hDeviceWindow, SW_RESTORE);
     }
+#else
+    if (DevPP.hDeviceWindow)
+    {
+        SDL_RestoreWindow((SDL_Window *)DevPP.hDeviceWindow);
+    }
+#endif
 }
 
 void CHW::OnAppDeactivate()
 {
+#if defined(XR_PLATFORM_WINDOWS)
     if (!DevPP.Windowed)
     {
         if (psDeviceMode.WindowStyle == rsFullscreen || psDeviceMode.WindowStyle == rsFullscreenBorderless)
             ShowWindow(DevPP.hDeviceWindow, SW_MINIMIZE);
     }
+#else
+    if (DevPP.hDeviceWindow)
+    {
+        if (psDeviceMode.WindowStyle == rsFullscreen || psDeviceMode.WindowStyle == rsFullscreenBorderless)
+            SDL_MinimizeWindow((SDL_Window *)DevPP.hDeviceWindow);
+    }
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -168,7 +183,11 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
         switch (info.subsystem)
         {
         case SDL_SYSWM_WINDOWS:
+#if defined(XR_PLATFORM_WINDOWS)
             P.hDeviceWindow = info.info.win.window;
+#else
+            P.hDeviceWindow = m_sdlWnd;
+#endif
             break;
         default: break;
         }
@@ -227,8 +246,10 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
     }
 
     // Capture PIX events
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DPERF_*Event
     d3dperf_BeginEvent = static_cast<decltype(d3dperf_BeginEvent)>(hD3D->GetProcAddress("D3DPERF_BeginEvent"));
     d3dperf_EndEvent = static_cast<decltype(d3dperf_EndEvent)>(hD3D->GetProcAddress("D3DPERF_EndEvent"));
+#endif
 
     // Capture misc data
 #ifdef DEBUG

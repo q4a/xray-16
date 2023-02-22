@@ -121,7 +121,9 @@ void TW_Save(ID3DTexture2D* T, LPCSTR name, LPCSTR prefix, LPCSTR postfix)
     string256 fn2;
     strconcat(sizeof(fn2), fn2, "debug" DELIMITER, fn, ".dds");
     Log("* debug texture save: ", fn2);
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     R_CHK(D3DXSaveTextureToFile(fn2, D3DXIFF_DDS, T, nullptr));
+#endif
 }
 
 ID3DTexture2D* TW_LoadTextureFromTexture(
@@ -137,11 +139,13 @@ ID3DTexture2D* TW_LoadTextureFromTexture(
     Reduce(top_width, top_height, levels_exist, levels_2_skip);
 
     // Create HW-surface
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     if (D3DX_DEFAULT == t_dest_fmt)
         t_dest_fmt = t_from_desc0.Format;
     R_CHK(D3DXCreateTexture(HW.pDevice, top_width, top_height, levels_exist, 0, t_dest_fmt,
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
     &t_dest));
+#endif
 
     // Copy surfaces & destroy temporary
     ID3DTexture2D* T_src = t_from;
@@ -157,7 +161,9 @@ ID3DTexture2D* TW_LoadTextureFromTexture(
         R_CHK(T_dst->GetSurfaceLevel(L_dst, &S_dst));
 
         // Copy
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
         R_CHK(D3DXLoadSurfaceFromSurface(S_dst, NULL, NULL, S_src, NULL, NULL, D3DX_FILTER_NONE, 0));
+#endif
 
         // Release surfaces
         _RELEASE(S_src);
@@ -322,6 +328,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 _DDS:
 {
     // Load and get header
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     D3DXIMAGE_INFO IMG;
     S = FS.r_open(fn);
 #ifdef DEBUG
@@ -403,6 +410,9 @@ _DDS_2D:
     ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
     return pTexture2D;
 }
+#else
+_DDS_2D:{}
+#endif
 }
 /*
 _BUMP:
@@ -506,16 +516,21 @@ _BUMP_from_base:
     R_ASSERT2(FS.exist(fn, "$game_textures$", fname, ".dds"), fname);
 
     // Load   SYS-MEM-surface, bound to device restrictions
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     D3DXIMAGE_INFO IMG;
+#endif
     S = FS.r_open(fn);
     img_size = S->length();
     ID3DTexture2D* T_base;
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     R_CHK2(D3DXCreateTextureFromFileInMemoryEx(HW.pDevice, S->pointer(), S->length(), D3DX_DEFAULT, D3DX_DEFAULT,
         D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &T_base), fn);
+#endif
     FS.r_close(S);
 
     // Create HW-surface
     ID3DTexture2D* T_normal_1 = nullptr;
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     R_CHK(D3DXCreateTexture(
         HW.pDevice, IMG.Width, IMG.Height, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &T_normal_1));
     R_CHK(D3DXComputeNormalMap(
@@ -523,6 +538,7 @@ _BUMP_from_base:
 
     // Transfer gloss-map
     TW_Iterate_1OP(T_normal_1, T_base, it_gloss_rev_base);
+#endif
 
     // Compress
     fmt = D3DFMT_DXT5;

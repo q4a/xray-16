@@ -46,6 +46,7 @@ IC void MouseRayFromPoint(Fvector& direction, int x, int y, Fmatrix& m_CamMat)
 #if defined(USE_DX9)
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX Screenshot
     if (!Device.b_is_Ready)
         return;
     // Create temp-surface
@@ -246,6 +247,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
 _end_:
     _RELEASE(pFB);
+#endif
 }
 #elif defined(USE_DX11)
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)

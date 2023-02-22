@@ -13,6 +13,8 @@ set(KERNEL_SRC
     "${IMGUI_DIR}/imgui_internal.h"
     "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp"
     "${IMGUI_DIR}/backends/imgui_impl_opengl3.h"
+    "${IMGUI_DIR}/backends/imgui_impl_dx9.cpp"
+    "${IMGUI_DIR}/backends/imgui_impl_dx9.h"
     "${IMGUI_DIR}/imstb_rectpack.h"
     "${IMGUI_DIR}/imstb_textedit.h"
     "${IMGUI_DIR}/imstb_truetype.h"

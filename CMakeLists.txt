@@ -71,6 +71,10 @@ if (STATIC_BUILD)
     #add_definitions(-DXRAY_STATIC_BUILD)
 endif()
 
+if (NOT WIN32)
+    option(USE_MESA_NINE "Use Gallium Nine from Mesa (without WINE) for D3D9 API" OFF)
+endif()
+
 function(xr_install tgt)
     if (NOT MSVC)
         install(TARGETS ${tgt} DESTINATION "."
@@ -251,6 +255,43 @@ if (NOT WIN32)
     find_package(Theora REQUIRED)
     find_package(LZO REQUIRED)
     find_package(mimalloc NAMES mimalloc2 mimalloc2.0 mimalloc)
+
+    if (USE_MESA_NINE) # for Gallium Nine
+        message("Using Gallium Nine for native D3D9 API")
+
+        #sudo apt install libd3dadapter9-mesa-dev
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(D3D REQUIRED IMPORTED_TARGET d3d)
+
+        add_subdirectory(nine-native)
+        set(NINE_NATIVE_INCLUDE_DIRS
+            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include"
+            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/D3D9"
+        )
+        include_directories("${NINE_NATIVE_INCLUDE_DIRS}")
+    else() # for DXVK Native
+        message("Using DXVK-native for D3D9 API")
+
+        include(ExternalProject)
+        ExternalProject_Add(dxvk-native
+            GIT_REPOSITORY    https://github.com/q4a/dxvk-native
+            GIT_TAG           304434892a241d1c5be580f5a66f8a7418cbd675
+            GIT_SHALLOW       ON
+            BUILD_ALWAYS      OFF
+            CONFIGURE_HANDLED_BY_BUILD ON
+            CONFIGURE_COMMAND meson ../dxvk-native
+            BUILD_COMMAND     ninja
+            INSTALL_COMMAND   ""
+        )
+        ExternalProject_Get_property(dxvk-native SOURCE_DIR BINARY_DIR)
+        set(DXVK_NATIVE_INCLUDE_DIRS
+            "${SOURCE_DIR}/include/native/directx"
+            "${SOURCE_DIR}/include/native/windows"
+        )
+        set(DXVK_NATIVE_D3D9_LIB ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
+        include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
+        ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native)
+    endif()
 endif()
 
 # Memory allocator option

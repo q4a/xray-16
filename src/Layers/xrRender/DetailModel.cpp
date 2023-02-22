@@ -119,7 +119,7 @@ void CDetail::Load(IReader* S)
 }
 
 #if !defined(_EDITOR) && (defined(USE_DX9) || defined(USE_DX11))
-#include "xrstripify.h"
+#include "xrStripify.h"
 
 void CDetail::Optimize()
 {
