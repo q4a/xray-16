@@ -1,4 +1,4 @@
-project(xrRenderPC_R1)
+project(xrRender_R1)
 
 set(SRC_FILES
     "../xrRenderDX9/BufferUtils.cpp"
@@ -132,6 +132,7 @@ set(SRC_FILES
     "LightProjector.cpp"
     "LightShadows.cpp"
     "stdafx.cpp"
+    "xrRender_R1.cpp"
 )
 
 # Fix for dx9HW.h. It has weird member: stats_manager stats_manager;
@@ -152,6 +153,14 @@ target_include_directories(${PROJECT_NAME}
     ${DXVK_NATIVE_INCLUDE_DIRS}
 )
 
+if (WIN32)
+set(PLATFORM_LIBS "")
+elseif (USE_MESA_NINE)
+set(PLATFORM_LIBS "nine-native")
+else()
+set(PLATFORM_LIBS "${DXVK_NATIVE_D3D9_LIB}")
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     xrCore
@@ -164,6 +173,7 @@ target_link_libraries(${PROJECT_NAME}
     xrMiscMath
     xrImGui
     ${SDL2_LIBRARIES}
+    ${PLATFORM_LIBS}
 )
 
 target_compile_definitions(${PROJECT_NAME}

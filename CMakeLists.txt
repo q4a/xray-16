@@ -267,7 +267,8 @@ if (NOT WIN32)
         add_subdirectory(Externals/nine-native)
         set(NINE_NATIVE_INCLUDE_DIRS
             "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include"
-            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/D3D9"
+            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/directx"
+            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/windows"
         )
         include_directories("${NINE_NATIVE_INCLUDE_DIRS}")
     else() # for DXVK Native

@@ -21,8 +21,8 @@ constexpr pcstr gl_library     = "xrRender_GL";
 
 constexpr pcstr RENDER_LIBRARIES[] =
 {
-#if defined(XR_PLATFORM_WINDOWS)
     r1_library,
+#if defined(XR_PLATFORM_WINDOWS)
     "xrRender_R2",
     "xrRender_R4",
 #endif
