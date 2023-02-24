@@ -19,7 +19,8 @@ void CRenderDevice::Initialize()
     {
         Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_HIDDEN |
             SDL_WINDOW_RESIZABLE;
-#ifdef USE_DXVK_NATIVE
+//#if defined(USE_DX9) && defined(USE_DXVK_NATIVE)
+#if defined(USE_DXVK_NATIVE)
         flags |= SDL_WINDOW_VULKAN;
 #endif
 
