@@ -3,6 +3,64 @@
 #include "Layers/xrRender/ShaderResourceTraits.h"
 #include "xrCore/FileCRC32.h"
 
+#if !defined(XR_PLATFORM_WINDOWS) // USE_LINUX D3DXFindShaderComment
+
+// wine/dlls/d3dcompiler_43/compiler.c
+
+#define D3DXERR_INVALIDDATA                      0x88760b59
+
+HRESULT D3DXFindShaderComment(const DWORD *byte_code, DWORD fourcc, const void **data, UINT *size)
+{
+    const DWORD *ptr = byte_code;
+    DWORD version;
+
+    Msg("byte_code %p, fourcc %#lx, data %p, size %p.\n", byte_code, fourcc, data, size);
+
+    if (data) *data = NULL;
+    if (size) *size = 0;
+
+    if (!byte_code) return D3DERR_INVALIDCALL;
+
+    version = *ptr >> 16;
+    if (version != 0x4658         /* FX */
+        && version != 0x5458  /* TX */
+        && version != 0x7ffe
+        && version != 0x7fff
+        && version != 0xfffe  /* VS */
+        && version != 0xffff) /* PS */
+    {
+        Msg("Invalid data supplied\n");
+        return D3DXERR_INVALIDDATA;
+    }
+
+    while (*++ptr != D3DSIO_END)
+    {
+        /* Check if it is a comment */
+        if ((*ptr & D3DSI_OPCODE_MASK) == D3DSIO_COMMENT)
+        {
+            DWORD comment_size = (*ptr & D3DSI_COMMENTSIZE_MASK) >> D3DSI_COMMENTSIZE_SHIFT;
+
+            /* Check if this is the comment we are looking for */
+            if (*(ptr + 1) == fourcc)
+            {
+                UINT ctab_size = (comment_size - 1) * sizeof(DWORD);
+                const void *ctab_data = ptr + 2;
+                if (size)
+                    *size = ctab_size;
+                if (data)
+                    *data = ctab_data;
+                Msg("Returning comment data at %p with size %d\n", ctab_data, ctab_size);
+                return D3D_OK;
+            }
+            ptr += comment_size;
+        }
+    }
+
+    return S_FALSE;
+}
+
+#endif
+
 template <typename T>
 static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name,
     T*& result, bool const disasm)
@@ -15,7 +73,6 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         return E_FAIL;
     }
 
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXFindShaderComment
     LPCVOID data = nullptr;
 
     _hr = D3DXFindShaderComment(buffer, MAKEFOURCC('C', 'T', 'A', 'B'), &data, nullptr);
@@ -28,7 +85,6 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     }
     else
         Msg("! D3DXFindShaderComment %s hr == 0x%08x", file_name, _hr);
-#endif
 
     if (disasm)
     {

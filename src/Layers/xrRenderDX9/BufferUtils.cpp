@@ -6,7 +6,13 @@ enum
     LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE,
 };
 
-#if !defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetFVFVertexSize
+#if !defined(XR_PLATFORM_WINDOWS) // USE_LINUX D3DXGetFVFVertexSize
+
+// wine/dlls/d3dx9_36/mesh.c
+
+/*************************************************************************
+ * D3DXGetFVFVertexSize
+ */
 static UINT Get_TexCoord_Size_From_FVF(DWORD FVF, int tex_num)
 {
     return (((((FVF) >> (16 + (2 * (tex_num)))) + 1) & 0x03) + 1);
@@ -18,14 +24,14 @@ UINT D3DXGetFVFVertexSize(DWORD FVF)
     UINT i;
     UINT numTextures = (FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
 
-    if (FVF & D3DFVF_NORMAL) size += sizeof(D3DVECTOR);
+    if (FVF & D3DFVF_NORMAL) size += sizeof(D3DVECTOR);//D3DXVECTOR3
     if (FVF & D3DFVF_DIFFUSE) size += sizeof(DWORD);
     if (FVF & D3DFVF_SPECULAR) size += sizeof(DWORD);
     if (FVF & D3DFVF_PSIZE) size += sizeof(DWORD);
 
     switch (FVF & D3DFVF_POSITION_MASK)
     {
-    case D3DFVF_XYZ:    size += sizeof(D3DVECTOR); break;
+    case D3DFVF_XYZ:    size += sizeof(D3DVECTOR); break;//D3DXVECTOR3
     case D3DFVF_XYZRHW: size += 4 * sizeof(FLOAT); break;
     case D3DFVF_XYZB1:  size += 4 * sizeof(FLOAT); break;
     case D3DFVF_XYZB2:  size += 5 * sizeof(FLOAT); break;
@@ -42,6 +48,53 @@ UINT D3DXGetFVFVertexSize(DWORD FVF)
 
     return size;
 }
+
+/*************************************************************************
+ * D3DXGetDeclVertexSize
+ */
+UINT D3DXGetDeclVertexSize(const D3DVERTEXELEMENT9 *decl, DWORD stream_idx)
+{
+    const D3DVERTEXELEMENT9 *element;
+    UINT size = 0;
+
+    Msg("decl %p, stream_idx %lu.\n", decl, stream_idx);
+
+    if (!decl) return 0;
+
+    for (element = decl; element->Stream != 0xff; ++element)
+    {
+        UINT type_size;
+
+        if (element->Stream != stream_idx) continue;
+
+        if (element->Type >= SDL_arraysize(d3dx_decltype_size))
+        {
+            Msg("Unhandled element type %#x, size will be incorrect.\n", element->Type);
+            continue;
+        }
+
+        type_size = d3dx_decltype_size[element->Type];
+        if (element->Offset + type_size > size) size = element->Offset + type_size;
+    }
+
+    return size;
+}
+
+/*************************************************************************
+ * D3DXGetDeclLength
+ */
+UINT D3DXGetDeclLength(const D3DVERTEXELEMENT9 *decl)
+{
+    const D3DVERTEXELEMENT9 *element;
+
+    Msg("decl %p\n", decl);
+
+    /* null decl results in exception on Windows XP */
+
+    for (element = decl; element->Stream != 0xff; ++element);
+
+    return element - decl;
+}
 #endif
 
 u32 GetFVFVertexSize(u32 FVF)
@@ -51,20 +104,12 @@ u32 GetFVFVertexSize(u32 FVF)
 
 u32 GetDeclVertexSize(const VertexElement* decl, u32 Stream)
 {
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetDeclVertexSize
     return D3DXGetDeclVertexSize(decl, Stream);
-#else
-    return 0;
-#endif
 }
 
 u32 GetDeclLength(const VertexElement* decl)
 {
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXGetDeclLength
     return D3DXGetDeclLength(decl);
-#else
-    return 0;
-#endif
 }
 
 //-----------------------------------------------------------------------------

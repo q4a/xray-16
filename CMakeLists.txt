@@ -278,7 +278,7 @@ if (NOT WIN32)
         include(ExternalProject)
         ExternalProject_Add(dxvk-native
             GIT_REPOSITORY    https://github.com/q4a/dxvk-native
-            GIT_TAG           304434892a241d1c5be580f5a66f8a7418cbd675
+            GIT_TAG           e6d339793721ceeb0db8848c6a6d62c22754fa33
             GIT_SHALLOW       ON
             BUILD_ALWAYS      OFF
             CONFIGURE_HANDLED_BY_BUILD ON
