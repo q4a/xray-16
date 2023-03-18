@@ -5,6 +5,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#if !defined(XR_PLATFORM_WINDOWS)
+#include <gli/gli.hpp>
+#endif
+
 constexpr cpcstr NOT_EXISTING_TEXTURE = "ed" DELIMITER "ed_not_existing_texture";
 
 void fix_texture_name(pstr fn)
@@ -139,12 +143,17 @@ ID3DTexture2D* TW_LoadTextureFromTexture(
     Reduce(top_width, top_height, levels_exist, levels_2_skip);
 
     // Create HW-surface
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
+#if defined(XR_PLATFORM_WINDOWS)
     if (D3DX_DEFAULT == t_dest_fmt)
         t_dest_fmt = t_from_desc0.Format;
     R_CHK(D3DXCreateTexture(HW.pDevice, top_width, top_height, levels_exist, 0, t_dest_fmt,
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
     &t_dest));
+#else
+    R_ASSERT(t_dest_fmt == t_from_desc0.Format);
+    R_CHK(HW.pDevice->CreateTexture(top_width, top_height, levels_exist, 0, t_dest_fmt,
+        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
+        &t_dest, nullptr));
 #endif
 
     // Copy surfaces & destroy temporary
@@ -281,6 +290,12 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     HRESULT result;
     ID3DTexture2D* pTexture2D = nullptr;
     IDirect3DCubeTexture9* pTextureCUBE = nullptr;
+#if !defined(XR_PLATFORM_WINDOWS)
+    gli::texture texture;
+    gli::storage_linear::extent_type dimensions;
+    D3DLOCKED_RECT lockRect;
+    gli::dx DX;
+#endif
     string_path fn;
     u32 dwWidth, dwHeight;
     size_t img_size = 0;
@@ -328,14 +343,14 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 _DDS:
 {
     // Load and get header
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
-    D3DXIMAGE_INFO IMG;
     S = FS.r_open(fn);
 #ifdef DEBUG
     Msg("* Loaded: %s[%d]", fn, S->length());
 #endif // DEBUG
     img_size = S->length();
     R_ASSERT(S);
+#if defined(XR_PLATFORM_WINDOWS)
+    D3DXIMAGE_INFO IMG;
     result = D3DXGetImageInfoFromFileInMemory(S->pointer(), S->length(), &IMG);
     if (FAILED(result))
     {
@@ -352,13 +367,38 @@ _DDS:
         goto _DDS_CUBE;
     else
         goto _DDS_2D;
+#else
+    texture = gli::load((char*)S->pointer(), img_size);
+    R_ASSERT2(!texture.empty(), fn);
+
+    switch (texture.target())
+    {
+    case gli::TARGET_2D:
+        goto _DDS_2D;
+        break;
+    /*case gli::TARGET_CUBE:
+    case gli::TARGET_3D:
+    case gli::TARGET_CUBE_ARRAY:
+        goto _DDS_CUBE;
+        break;*/
+    default:
+        Msg("!#! Can't detect texture.target()");
+        NODEFAULT;
+        break;
+    }
+#endif
 
 _DDS_CUBE:
 {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     result = D3DXCreateCubeTextureFromFileInMemoryEx(HW.pDevice, S->pointer(), S->length(), D3DX_DEFAULT,
         IMG.MipLevels, 0, IMG.Format,
        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
         D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &pTextureCUBE);
+#else
+    dimensions = texture.extent();
+    //result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 1, 0, gli_format_map.at(texture.format()), D3DPOOL_MANAGED, texture, nullptr);
+#endif
     FS.r_close(S);
 
     if (FAILED(result))
@@ -372,9 +412,12 @@ _DDS_CUBE:
     }
 
     // OK
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     dwWidth = IMG.Width;
     dwHeight = IMG.Height;
     fmt = IMG.Format;
+#else
+#endif
     ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
     mip_cnt = pTextureCUBE->GetLevelCount();
     return pTextureCUBE;
@@ -384,9 +427,24 @@ _DDS_2D:
     xr_strlwr(fn);
     // Load   SYS-MEM-surface, bound to device restrictions
     ID3DTexture2D* T_sysmem;
+#if defined(XR_PLATFORM_WINDOWS)
+    fmt = IMG.Format;
     HRESULT const result =
         D3DXCreateTextureFromFileInMemoryEx(HW.pDevice, S->pointer(), S->length(), D3DX_DEFAULT, D3DX_DEFAULT,
             IMG.MipLevels, 0, IMG.Format, D3DPOOL_SYSTEMMEM, D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &T_sysmem);
+#else
+    dimensions = texture.extent();
+    fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
+    result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 0, 0, fmt,
+            D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
+    result = T_sysmem->LockRect( 0, &lockRect, 0, D3DLOCK_DISCARD );
+    if (!FAILED(result))
+    {
+        char* dest = static_cast<char*>(lockRect.pBits);
+        memcpy(dest, texture.data(), texture.size());
+        result = T_sysmem->UnlockRect(0);
+    }
+#endif
     FS.r_close(S);
 
     if (FAILED(result))
@@ -401,18 +459,14 @@ _DDS_2D:
     }
 
     img_loaded_lod = get_texture_load_lod(fn);
-    pTexture2D = TW_LoadTextureFromTexture(T_sysmem, IMG.Format, img_loaded_lod, dwWidth, dwHeight);
+    pTexture2D = TW_LoadTextureFromTexture(T_sysmem, fmt, img_loaded_lod, dwWidth, dwHeight);
     mip_cnt = pTexture2D->GetLevelCount();
     _RELEASE(T_sysmem);
 
     // OK
-    fmt = IMG.Format;
     ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
     return pTexture2D;
 }
-#else
-_DDS_2D:{}
-#endif
 }
 /*
 _BUMP:

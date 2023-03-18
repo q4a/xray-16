@@ -148,6 +148,7 @@ target_include_directories(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/../xrRender/blenders
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/Externals/luabind
+    ${CMAKE_SOURCE_DIR}/Externals/gli
     ${CMAKE_SOURCE_DIR}/sdk/include
     ${SDL2_INCLUDE_DIRS}
     ${DXVK_NATIVE_INCLUDE_DIRS}
