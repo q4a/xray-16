@@ -260,6 +260,8 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
 #if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DPERF_*Event
     d3dperf_BeginEvent = static_cast<decltype(d3dperf_BeginEvent)>(hD3D->GetProcAddress("D3DPERF_BeginEvent"));
     d3dperf_EndEvent = static_cast<decltype(d3dperf_EndEvent)>(hD3D->GetProcAddress("D3DPERF_EndEvent"));
+#else
+    Msg("q4a D3DPERF_*Event");
 #endif
 
     // Capture misc data

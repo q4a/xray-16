@@ -247,6 +247,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
 _end_:
     _RELEASE(pFB);
+#else
+    Msg("q4a CRender::ScreenshotImpl");
 #endif
 }
 #elif defined(USE_DX11)

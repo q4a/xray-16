@@ -101,7 +101,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         FS.w_close(W);
         _RELEASE(disasm);
 #else
-        Log("* Linux can't execute D3DXDisassembleShader for:", file_name);
+        Msg("q4a Linux can't execute D3DXDisassembleShader for:", file_name);
 #endif
     }
 
@@ -358,7 +358,7 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
                 Msg("Can't compile shader hr=0x%08x", _result);
         }
 #else
-        Log("* Linux can't build HLSL shader:", file_name);
+        Msg("q4a Linux can't build HLSL shader:", file_name);
 #endif
     }
 

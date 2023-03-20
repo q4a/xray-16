@@ -1151,6 +1151,8 @@ void TW_Save(ID3DTexture2D* T, LPCSTR name, LPCSTR prefix, LPCSTR postfix)
     Log("* debug texture save: ", fn2);
 #if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     R_CHK(D3DXSaveTextureToFile(fn2, D3DXIFF_DDS, T, nullptr));
+#else
+    Msg("q4a D3DXSaveTextureToFile");
 #endif
 }
 
@@ -1391,7 +1393,11 @@ _DDS:
         goto _DDS_2D;
 #else
     texture = gli::load((char*)S->pointer(), img_size);
-    R_ASSERT2(!texture.empty(), fn);
+    if(texture.empty())
+    {
+        Msg("q4a can't load: %s", fn);
+        R_ASSERT2(!texture.empty(), fn);
+    }
 
     switch (texture.target())
     {
@@ -1404,7 +1410,7 @@ _DDS:
         goto _DDS_CUBE;
         break;*/
     default:
-        Msg("!#! Can't detect texture.target()");
+        Msg("q4a Can't detect texture.target()");
         NODEFAULT;
         break;
     }
@@ -1418,6 +1424,7 @@ _DDS_CUBE:
        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
         D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &pTextureCUBE);
 #else
+    Msg("q4a _DDS_CUBE");
     dimensions = texture.extent();
     //result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 1, 0, gli_format_map.at(texture.format()), D3DPOOL_MANAGED, texture, nullptr);
 #endif
@@ -1457,6 +1464,7 @@ _DDS_2D:
 #else
     dimensions = texture.extent();
     fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
+    Msg("!@! '%s'-'3'-'%d'", fn, fmt);
     result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 0, 0, fmt,
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
     result = T_sysmem->LockRect( 0, &lockRect, 0, D3DLOCK_DISCARD );
@@ -1594,6 +1602,8 @@ _BUMP_from_base:
     // Load   SYS-MEM-surface, bound to device restrictions
 #if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
     D3DXIMAGE_INFO IMG;
+#else
+    Msg("q4a _BUMP_from_base");
 #endif
     S = FS.r_open(fn);
     img_size = S->length();
