@@ -323,8 +323,11 @@ void CHW::Reset()
 #endif
 }
 
-void CHW::SetPrimaryAttributes(u32& /*windowFlags*/)
+void CHW::SetPrimaryAttributes(u32& windowFlags)
 {
+    #if defined(USE_DXVK_NATIVE)
+        windowFlags |= SDL_WINDOW_VULKAN;
+    #endif
     Caps.bForceGPU_SW      = strstr(Core.Params, "-gpu_sw");
     Caps.bForceGPU_NonPure = strstr(Core.Params, "-gpu_nopure");
     Caps.bForceGPU_REF     = strstr(Core.Params, "-gpu_ref");
