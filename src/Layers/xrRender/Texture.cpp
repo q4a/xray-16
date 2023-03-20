@@ -31,7 +31,7 @@
 
 // wine-8.2/include/winuser.h
 
-static inline BOOL WINAPI SetRect(LPRECT rect, INT left, INT top, INT right, INT bottom)
+static inline BOOL SetRect(LPRECT rect, INT left, INT top, INT right, INT bottom)
 {
     if (!rect) return FALSE;
     rect->left   = left;
@@ -724,7 +724,7 @@ void point_filter_argb_pixels(const BYTE *src, UINT src_row_pitch, UINT src_slic
  *   negative values for pSrcRect are allowed as we're only looking at the width and height anyway.
  *
  */
-HRESULT WINAPI D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
+HRESULT D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
                                          const PALETTEENTRY *dst_palette, const RECT *dst_rect, const void *src_memory,
                                          D3DFORMAT src_format, UINT src_pitch, const PALETTEENTRY *src_palette, const RECT *src_rect,
                                          DWORD filter, D3DCOLOR color_key)
@@ -902,7 +902,7 @@ HRESULT WINAPI D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
  *            D3DXERR_INVALIDDATA, if one of the surfaces is not lockable
  *
  */
-HRESULT WINAPI D3DXLoadSurfaceFromSurface(IDirect3DSurface9 *dst_surface,
+HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface9 *dst_surface,
                                           const PALETTEENTRY *dst_palette, const RECT *dst_rect, IDirect3DSurface9 *src_surface,
                                           const PALETTEENTRY *src_palette, const RECT *src_rect, DWORD filter, D3DCOLOR color_key)
 {
