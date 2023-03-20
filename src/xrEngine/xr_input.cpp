@@ -246,9 +246,9 @@ void CInput::KeyUpdate()
             cbStack.back()->IR_OnTextInput(event.text.text);
             break;
 
-        case SDL_KEYMAPCHANGED:
-            seqKeyMapChanged.Process();
-            break;
+        //case SDL_KEYMAPCHANGED:
+        //    seqKeyMapChanged.Process();
+        //    break;
         }
     }
 
@@ -512,8 +512,9 @@ void CInput::iSetMousePos(const Ivector2& p) const
     SDL_WarpMouseInWindow(Device.m_sdlWnd, p.x, p.y);
 }
 
-void CInput::GrabInput(const bool grab)
+void CInput::GrabInput(const bool grab1)
 {
+    bool grab = false;
     // Self descriptive
     SDL_ShowCursor(grab ? SDL_FALSE : SDL_TRUE);
 
