@@ -279,10 +279,12 @@ if (NOT WIN32)
         ExternalProject_Add(dxvk-native
             GIT_REPOSITORY    https://github.com/q4a/dxvk-native
             GIT_TAG           e6d339793721ceeb0db8848c6a6d62c22754fa33
+#            GIT_REPOSITORY    https://github.com/q4a/dxvk
+#            GIT_TAG           308cfcb3867210ef454077c5b49541aba9b2f1e5
             GIT_SHALLOW       ON
             BUILD_ALWAYS      OFF
             CONFIGURE_HANDLED_BY_BUILD ON
-            CONFIGURE_COMMAND meson ../dxvk-native
+            CONFIGURE_COMMAND meson ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
             BUILD_COMMAND     ninja
             INSTALL_COMMAND   ""
         )

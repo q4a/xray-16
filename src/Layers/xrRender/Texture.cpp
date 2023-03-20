@@ -1316,6 +1316,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     IDirect3DCubeTexture9* pTextureCUBE = nullptr;
 #if !defined(XR_PLATFORM_WINDOWS)
     gli::texture texture;
+    gli::texture_cube texCube;
     gli::storage_linear::extent_type dimensions;
     D3DLOCKED_RECT lockRect;
     gli::dx DX;
@@ -1404,11 +1405,11 @@ _DDS:
     case gli::TARGET_2D:
         goto _DDS_2D;
         break;
-    /*case gli::TARGET_CUBE:
-    case gli::TARGET_3D:
-    case gli::TARGET_CUBE_ARRAY:
+    /*case gli::TARGET_3D:
+    case gli::TARGET_CUBE_ARRAY:*/
+    case gli::TARGET_CUBE:
         goto _DDS_CUBE;
-        break;*/
+        break;
     default:
         Msg("q4a Can't detect texture.target()");
         NODEFAULT;
@@ -1424,9 +1425,28 @@ _DDS_CUBE:
        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
         D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &pTextureCUBE);
 #else
-    Msg("q4a _DDS_CUBE");
-    dimensions = texture.extent();
-    //result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 1, 0, gli_format_map.at(texture.format()), D3DPOOL_MANAGED, texture, nullptr);
+    texCube = gli::texture_cube(texture);
+    fmt = static_cast<D3DFORMAT>(DX.translate(texCube.format()).D3DFormat);
+    Msg("!@! '%s'-'5'-'%d'-'%d'-'%d'", fn, fmt, texCube.max_level(), texCube.levels());
+    result = HW.pDevice->CreateCubeTexture(texture.extent().x, texCube.levels(), 0, fmt,
+        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED), &pTextureCUBE, nullptr);
+    if (!FAILED(result))
+    {
+        D3DLOCKED_RECT rect;
+        char* dest;
+        ulong maxface = texCube.max_face();
+        for (ulong i = 0; i <= maxface; ++i)
+        {
+            result = pTextureCUBE->LockRect((D3DCUBEMAP_FACES)i, 0, &rect, 0, D3DLOCK_DISCARD);
+            if (FAILED(result))
+                break;
+            dest = static_cast<char*>(rect.pBits);
+            memcpy(dest, texCube[i].data(), texCube[i].size());
+            result = pTextureCUBE->UnlockRect((D3DCUBEMAP_FACES)i, 0);
+            if (FAILED(result))
+                break;
+        }
+    }
 #endif
     FS.r_close(S);
 
@@ -1464,10 +1484,13 @@ _DDS_2D:
 #else
     dimensions = texture.extent();
     fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
-    Msg("!@! '%s'-'3'-'%d'", fn, fmt);
-    result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 0, 0, fmt,
+    Msg("!@! '%s'-'3'-'%d'-'%d'-'%d'", fn, fmt, texture.max_level(), texture.levels());
+    result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, texture.levels(), 0, fmt,
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
-    result = T_sysmem->LockRect( 0, &lockRect, 0, D3DLOCK_DISCARD );
+    if (!FAILED(result))
+    {
+        result = T_sysmem->LockRect(0, &lockRect, 0, D3DLOCK_DISCARD);
+    }
     if (!FAILED(result))
     {
         char* dest = static_cast<char*>(lockRect.pBits);
