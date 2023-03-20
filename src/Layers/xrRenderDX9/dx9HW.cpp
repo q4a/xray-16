@@ -498,7 +498,11 @@ void CHW::EndScene()
 
 void CHW::Present()
 {
-    pDevice->Present(nullptr, nullptr, nullptr, nullptr);
+    HRESULT hr = pDevice->Present(nullptr, nullptr, nullptr, nullptr);
+    if (FAILED(hr))
+    {
+        Msg("!!! pDevice->Present failed");
+    }
     CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;
 }
 

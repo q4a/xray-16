@@ -2485,7 +2485,7 @@ _DDS_2D:
 #else
     dimensions = texture.extent();
     fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
-    Msg("!@! '%s'-'3'-'%d'", fn, fmt);
+    Msg("!@! '%s'-'3'-'%d'-'%d'-'%d'", fn, fmt, texture.max_level(), texture.levels());
     result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, 0, 0, fmt,
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
     result = T_sysmem->LockRect( 0, &lockRect, 0, D3DLOCK_DISCARD );
