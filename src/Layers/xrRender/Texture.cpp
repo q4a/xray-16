@@ -1369,9 +1369,9 @@ _DDS:
 {
     // Load and get header
     S = FS.r_open(fn);
-#ifdef DEBUG
+//#ifdef DEBUG
     Msg("* Loaded: %s[%d]", fn, S->length());
-#endif // DEBUG
+//#endif // DEBUG
     img_size = S->length();
     R_ASSERT(S);
 #if defined(XR_PLATFORM_WINDOWS)
@@ -1419,16 +1419,18 @@ _DDS:
 
 _DDS_CUBE:
 {
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
+#if defined(XR_PLATFORM_WINDOWS)
     result = D3DXCreateCubeTextureFromFileInMemoryEx(HW.pDevice, S->pointer(), S->length(), D3DX_DEFAULT,
         IMG.MipLevels, 0, IMG.Format,
        (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED),
         D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, nullptr, &pTextureCUBE);
 #else
     texCube = gli::texture_cube(texture);
+    dwWidth = texture.extent().x;
+    dwHeight = dwWidth;
     fmt = static_cast<D3DFORMAT>(DX.translate(texCube.format()).D3DFormat);
     Msg("!@! '%s'-'5'-'%d'-'%d'-'%d'", fn, fmt, texCube.max_level(), texCube.levels());
-    result = HW.pDevice->CreateCubeTexture(texture.extent().x, texCube.levels(), 0, fmt,
+    result = HW.pDevice->CreateCubeTexture(dwWidth, texCube.levels(), 0, fmt,
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED), &pTextureCUBE, nullptr);
     if (!FAILED(result))
     {
@@ -1461,11 +1463,10 @@ _DDS_CUBE:
     }
 
     // OK
-#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX textures
+#if defined(XR_PLATFORM_WINDOWS)
     dwWidth = IMG.Width;
     dwHeight = IMG.Height;
     fmt = IMG.Format;
-#else
 #endif
     ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
     mip_cnt = pTextureCUBE->GetLevelCount();

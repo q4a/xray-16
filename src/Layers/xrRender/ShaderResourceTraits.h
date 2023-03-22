@@ -708,8 +708,6 @@ T* CResourceManager::CreateShader(cpcstr name, pcstr filename /*= nullptr*/, u32
         flags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | (xrDebug::DebuggerIsPresent() ? D3DCOMPILE_DEBUG : 0);
 #   endif
 #endif
-#else
-        Msg("q4a shader flag before GEnv.Render->shader_compile");
 #endif
 
         // Compile

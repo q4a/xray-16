@@ -40,7 +40,7 @@ HRESULT D3DXDeclaratorFromFVF(DWORD fvf, D3DVERTEXELEMENT9 declaration[MAX_FVF_D
     unsigned int idx = 0;
     unsigned int i;
 
-    Msg("fvf %#lx, declaration %p.\n", fvf, declaration);
+//    TRACE("fvf %#lx, declaration %p.\n", fvf, declaration);
 
     if (fvf & (D3DFVF_RESERVED0 | D3DFVF_RESERVED2)) return D3DERR_INVALIDCALL;
 

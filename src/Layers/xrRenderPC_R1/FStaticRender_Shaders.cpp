@@ -5,7 +5,7 @@
 
 #if !defined(XR_PLATFORM_WINDOWS) // USE_LINUX D3DXFindShaderComment
 
-// wine/dlls/d3dcompiler_43/compiler.c
+// wine-8.2/dlls/d3dx9_36/shader.c
 
 #define D3DXERR_INVALIDDATA                      0x88760b59
 
@@ -14,7 +14,7 @@ HRESULT D3DXFindShaderComment(const DWORD *byte_code, DWORD fourcc, const void *
     const DWORD *ptr = byte_code;
     DWORD version;
 
-    Msg("byte_code %p, fourcc %#lx, data %p, size %p.\n", byte_code, fourcc, data, size);
+//    TRACE("byte_code %p, fourcc %#lx, data %p, size %p.\n", byte_code, fourcc, data, size);
 
     if (data) *data = NULL;
     if (size) *size = 0;
@@ -49,7 +49,7 @@ HRESULT D3DXFindShaderComment(const DWORD *byte_code, DWORD fourcc, const void *
                     *size = ctab_size;
                 if (data)
                     *data = ctab_data;
-                Msg("Returning comment data at %p with size %d\n", ctab_data, ctab_size);
+//                TRACE("Returning comment data at %p with size %d\n", ctab_data, ctab_size);
                 return D3D_OK;
             }
             ptr += comment_size;

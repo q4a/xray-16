@@ -57,7 +57,7 @@ UINT D3DXGetDeclVertexSize(const D3DVERTEXELEMENT9 *decl, DWORD stream_idx)
     const D3DVERTEXELEMENT9 *element;
     UINT size = 0;
 
-    Msg("decl %p, stream_idx %lu.\n", decl, stream_idx);
+//    TRACE("decl %p, stream_idx %lu.\n", decl, stream_idx);
 
     if (!decl) return 0;
 
@@ -87,7 +87,7 @@ UINT D3DXGetDeclLength(const D3DVERTEXELEMENT9 *decl)
 {
     const D3DVERTEXELEMENT9 *element;
 
-    Msg("decl %p\n", decl);
+//    TRACE("decl %p\n", decl);
 
     /* null decl results in exception on Windows XP */
 
