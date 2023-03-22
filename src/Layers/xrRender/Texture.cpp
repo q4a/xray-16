@@ -7,6 +7,7 @@
 
 #if !defined(XR_PLATFORM_WINDOWS)
 #include <gli/gli.hpp>
+inline DWORD min(DWORD x, DWORD y) { return x < y ? x : y; }
 
 /************************************************************
  * helper functions for D3DXLoadSurfaceFromSurface
@@ -14,6 +15,7 @@
 
 // wine-8.2/include/d3dx9.h
 
+#if !defined(XR_PLATFORM_WINDOWS)
 #define D3DX_DEFAULT         ((UINT)-1)
 
 // wine-8.2/include/d3dx9tex.h
@@ -40,6 +42,7 @@ static inline BOOL SetRect(LPRECT rect, INT left, INT top, INT right, INT bottom
     rect->bottom = bottom;
     return TRUE;
 }
+#endif
 
 // wine-8.2/dlls/d3dx9_36/d3dx9_private.h
 
@@ -390,7 +393,7 @@ void format_to_vec4(const struct pixel_format_desc *format, const BYTE *src, str
             mask = ~0u >> (32 - format->bits[c]);
 
             memcpy(&tmp, src + format->shift[c] / 8,
-                   std::min(sizeof(DWORD), static_cast<ulong>((format->shift[c] % 8 + format->bits[c] + 7) / 8)));
+                min(sizeof(DWORD), static_cast<DWORD>((format->shift[c] % 8 + format->bits[c] + 7) / 8)));
 
             if (format->type == FORMAT_ARGBF16)
             {
@@ -724,7 +727,7 @@ void point_filter_argb_pixels(const BYTE *src, UINT src_row_pitch, UINT src_slic
  *   negative values for pSrcRect are allowed as we're only looking at the width and height anyway.
  *
  */
-HRESULT D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
+HRESULT LoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
                                          const PALETTEENTRY *dst_palette, const RECT *dst_rect, const void *src_memory,
                                          D3DFORMAT src_format, UINT src_pitch, const PALETTEENTRY *src_palette, const RECT *src_rect,
                                          DWORD filter, D3DCOLOR color_key)
@@ -798,10 +801,10 @@ HRESULT D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
     if (dst_rect_aligned.top & (destformatdesc->block_height - 1))
         dst_rect_aligned.top = dst_rect_aligned.top & ~(destformatdesc->block_height - 1);
     if (dst_rect_aligned.right & (destformatdesc->block_width - 1) && dst_rect_aligned.right != surfdesc.Width)
-        dst_rect_aligned.right = std::min((dst_rect_aligned.right + destformatdesc->block_width - 1)
+        dst_rect_aligned.right = min((dst_rect_aligned.right + destformatdesc->block_width - 1)
                                          & ~(destformatdesc->block_width - 1), surfdesc.Width);
     if (dst_rect_aligned.bottom & (destformatdesc->block_height - 1) && dst_rect_aligned.bottom != surfdesc.Height)
-        dst_rect_aligned.bottom = std::min((dst_rect_aligned.bottom + destformatdesc->block_height - 1)
+        dst_rect_aligned.bottom = min((dst_rect_aligned.bottom + destformatdesc->block_height - 1)
                                           & ~(destformatdesc->block_height - 1), surfdesc.Height);
 
     dst_size.width = dst_rect->right - dst_rect->left;
@@ -902,7 +905,7 @@ HRESULT D3DXLoadSurfaceFromMemory(IDirect3DSurface9 *dst_surface,
  *            D3DXERR_INVALIDDATA, if one of the surfaces is not lockable
  *
  */
-HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface9 *dst_surface,
+HRESULT LoadSurfaceFromSurface(IDirect3DSurface9 *dst_surface,
                                           const PALETTEENTRY *dst_palette, const RECT *dst_rect, IDirect3DSurface9 *src_surface,
                                           const PALETTEENTRY *src_palette, const RECT *src_rect, DWORD filter, D3DCOLOR color_key)
 {
@@ -1023,7 +1026,7 @@ HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface9 *dst_surface,
     if (FAILED(lock_surface(src_surface, NULL, &lock, &temp_surface, FALSE)))
         return D3DERR_INVALIDCALL; // D3DXERR_INVALIDDATA;
 
-    hr = D3DXLoadSurfaceFromMemory(dst_surface, dst_palette, dst_rect, lock.pBits,
+    hr = LoadSurfaceFromMemory(dst_surface, dst_palette, dst_rect, lock.pBits,
                                    src_desc.Format, lock.Pitch, src_palette, src_rect, filter, color_key);
 
     if (FAILED(unlock_surface(src_surface, NULL, temp_surface, FALSE)))
@@ -1196,7 +1199,7 @@ ID3DTexture2D* TW_LoadTextureFromTexture(
         R_CHK(T_dst->GetSurfaceLevel(L_dst, &S_dst));
 
         // Copy
-        R_CHK(D3DXLoadSurfaceFromSurface(S_dst, NULL, NULL, S_src, NULL, NULL, D3DX_FILTER_NONE, 0));
+        R_CHK(LoadSurfaceFromSurface(S_dst, NULL, NULL, S_src, NULL, NULL, D3DX_FILTER_NONE, 0));
 
         // Release surfaces
         _RELEASE(S_src);
@@ -1388,6 +1391,7 @@ _DDS:
         goto _DDS;
     }
 
+    Msg("!@! '%s'_1_'%d'_2_'%d'_3_'%d'_4_'%d'_5_'%d'", fn, IMG.ResourceType, IMG.Format, IMG.Width, IMG.Height, IMG.MipLevels);
     if (IMG.ResourceType == D3DRTYPE_CUBETEXTURE)
         goto _DDS_CUBE;
     else
@@ -1429,7 +1433,7 @@ _DDS_CUBE:
     dwWidth = texture.extent().x;
     dwHeight = dwWidth;
     fmt = static_cast<D3DFORMAT>(DX.translate(texCube.format()).D3DFormat);
-    Msg("!@! '%s'-'5'-'%d'-'%d'-'%d'", fn, fmt, texCube.max_level(), texCube.levels());
+    Msg("!@! '%s'_1_'5'_2_'%d'_3_'%d'_4_'%d'_5_'%d'", fn, fmt, dwWidth, dwHeight, texCube.levels());
     result = HW.pDevice->CreateCubeTexture(dwWidth, texCube.levels(), 0, fmt,
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED), &pTextureCUBE, nullptr);
     if (!FAILED(result))
@@ -1485,7 +1489,7 @@ _DDS_2D:
 #else
     dimensions = texture.extent();
     fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
-    Msg("!@! '%s'-'3'-'%d'-'%d'-'%d'", fn, fmt, texture.max_level(), texture.levels());
+    Msg("!@! '%s'_1_'3'_2_'%d'_3_'%d'_4_'%d'_5_'%d'", fn, fmt, dimensions.x, dimensions.y, texture.levels());
     result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, texture.levels(), 0, fmt,
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
     if (!FAILED(result))
