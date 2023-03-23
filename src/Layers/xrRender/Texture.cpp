@@ -1438,19 +1438,32 @@ _DDS_CUBE:
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED), &pTextureCUBE, nullptr);
     if (!FAILED(result))
     {
-        D3DLOCKED_RECT rect;
         char* dest;
-        ulong maxface = texCube.max_face();
-        for (ulong i = 0; i <= maxface; ++i)
+        for (size_t layer = 0; layer < texture.layers(); ++layer)
         {
-            result = pTextureCUBE->LockRect((D3DCUBEMAP_FACES)i, 0, &rect, 0, D3DLOCK_DISCARD);
-            if (FAILED(result))
-                break;
-            dest = static_cast<char*>(rect.pBits);
-            memcpy(dest, texCube[i].data(), texCube[i].size());
-            result = pTextureCUBE->UnlockRect((D3DCUBEMAP_FACES)i, 0);
-            if (FAILED(result))
-                break;
+            for (size_t face = 0; face < texture.faces(); ++face)
+            {
+                for (size_t level = 0; level < texture.levels(); ++level)
+                {
+                    result = pTextureCUBE->LockRect((D3DCUBEMAP_FACES)face, level, &lockRect, 0, D3DLOCK_DISCARD);
+                    if (!FAILED(result))
+                    {
+                        dest = static_cast<char*>(lockRect.pBits);
+                        memcpy(dest, texture.data(layer, face, level), texture.size(level));
+                        result = pTextureCUBE->UnlockRect((D3DCUBEMAP_FACES)face, level);
+                    }
+                    if(FAILED(result))
+                    {
+                        Msg("! Can't load texture '%s' with layer:'%d', face:'%d', level:'%d'", fn, layer, face, level);
+                        string_path temp;
+                        R_ASSERT(FS.exist(temp, "$game_textures$", NOT_EXISTING_TEXTURE, ".dds"));
+                        xr_strlwr(temp);
+                        R_ASSERT(xr_strcmp(temp, fn));
+                        xr_strcpy(fn, temp);
+                        goto _DDS;
+                    }
+                }
+            }
         }
     }
 #endif
@@ -1494,14 +1507,35 @@ _DDS_2D:
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
     if (!FAILED(result))
     {
-        result = T_sysmem->LockRect(0, &lockRect, 0, D3DLOCK_DISCARD);
+        char* dest;
+        for (size_t layer = 0; layer < texture.layers(); ++layer)
+        {
+            for (size_t face = 0; face < texture.faces(); ++face)
+            {
+                for (size_t level = 0; level < texture.levels(); ++level)
+                {
+                    result = T_sysmem->LockRect(level, &lockRect, 0, D3DLOCK_DISCARD);
+                    if (!FAILED(result))
+                    {
+                        dest = static_cast<char*>(lockRect.pBits);
+                        memcpy(dest, texture.data(layer, face, level), texture.size(level));
+                        result = T_sysmem->UnlockRect(level);
+                    }
+                    if(FAILED(result))
+                    {
+                        Msg("! Can't load texture '%s' with layer:'%d', face:'%d', level:'%d'", fn, layer, face, level);
+                        string_path temp;
+                        R_ASSERT(FS.exist(temp, "$game_textures$", NOT_EXISTING_TEXTURE, ".dds"));
+                        xr_strlwr(temp);
+                        R_ASSERT(xr_strcmp(temp, fn));
+                        xr_strcpy(fn, temp);
+                        goto _DDS;
+                    }
+                }
+            }
+        }
     }
-    if (!FAILED(result))
-    {
-        char* dest = static_cast<char*>(lockRect.pBits);
-        memcpy(dest, texture.data(), texture.size());
-        result = T_sysmem->UnlockRect(0);
-    }
+
 #endif
     FS.r_close(S);
 
