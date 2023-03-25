@@ -100,7 +100,7 @@ public:
     decltype(&D3DPERF_EndEvent) d3dperf_EndEvent = nullptr;
 
 #if !defined(_MAYA_EXPORT)
-    stats_manager stats_manager;
+    stats_manager m_stats_manager;
 #endif
 
 private:
