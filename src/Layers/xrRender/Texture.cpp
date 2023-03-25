@@ -1372,9 +1372,9 @@ _DDS:
 {
     // Load and get header
     S = FS.r_open(fn);
-//#ifdef DEBUG
+#ifdef DEBUG
     Msg("* Loaded: %s[%d]", fn, S->length());
-//#endif // DEBUG
+#endif // DEBUG
     img_size = S->length();
     R_ASSERT(S);
 #if defined(XR_PLATFORM_WINDOWS)
@@ -1415,7 +1415,7 @@ _DDS:
         goto _DDS_CUBE;
         break;
     default:
-        Msg("q4a Can't detect texture.target()");
+        Msg("! Can't detect texture.target()");
         NODEFAULT;
         break;
     }
@@ -1433,7 +1433,6 @@ _DDS_CUBE:
     dwWidth = texture.extent().x;
     dwHeight = dwWidth;
     fmt = static_cast<D3DFORMAT>(DX.translate(texCube.format()).D3DFormat);
-    Msg("!@! '%s'_1_'5'_2_'%d'_3_'%d'_4_'%d'_5_'%d'", fn, fmt, dwWidth, dwHeight, texCube.levels());
     result = HW.pDevice->CreateCubeTexture(dwWidth, texCube.levels(), 0, fmt,
         (RImplementation.o.no_ram_textures ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED), &pTextureCUBE, nullptr);
     if (!FAILED(result))
@@ -1502,7 +1501,6 @@ _DDS_2D:
 #else
     dimensions = texture.extent();
     fmt = static_cast<D3DFORMAT>(DX.translate(texture.format()).D3DFormat);
-    Msg("!@! '%s'_1_'3'_2_'%d'_3_'%d'_4_'%d'_5_'%d'", fn, fmt, dimensions.x, dimensions.y, texture.levels());
     result = HW.pDevice->CreateTexture(dimensions.x, dimensions.y, texture.levels(), 0, fmt,
             D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr);
     if (!FAILED(result))
