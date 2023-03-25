@@ -71,6 +71,10 @@ if (STATIC_BUILD)
     #add_definitions(-DXRAY_STATIC_BUILD)
 endif()
 
+if (NOT WIN32)
+    option(USE_MESA_NINE "Use Gallium Nine from Mesa (without WINE) for D3D9 API" OFF)
+endif()
+
 function(xr_install tgt)
     if (NOT MSVC)
         install(TARGETS ${tgt} DESTINATION "."
@@ -251,6 +255,73 @@ if (NOT WIN32)
     find_package(Theora REQUIRED)
     find_package(LZO REQUIRED)
     find_package(mimalloc NAMES mimalloc2 mimalloc2.0 mimalloc)
+
+    if (USE_MESA_NINE) # for Gallium Nine
+        message("Using Gallium Nine for native D3D9 API")
+        add_definitions(-DUSE_MESA_NINE)
+
+        #sudo apt install libd3dadapter9-mesa-dev
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(D3D REQUIRED IMPORTED_TARGET d3d)
+
+        include(ExternalProject)
+        ExternalProject_Add(nine-native
+            GIT_REPOSITORY    https://github.com/q4a/nine-native
+            GIT_TAG           main
+            GIT_SHALLOW       ON
+            BUILD_ALWAYS      OFF
+            BUILD_BYPRODUCTS  <BINARY_DIR>/libnine-native.a
+            CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release -DNINE_POSITION_INDEPENDENT=ON
+            INSTALL_COMMAND   ""
+        )
+        ExternalProject_Get_property(nine-native SOURCE_DIR BINARY_DIR)
+        set(NINE_NATIVE_INCLUDE_DIRS
+            "${SOURCE_DIR}/include"
+            "${SOURCE_DIR}/include/D3D9"
+            "${SOURCE_DIR}/include/windows"
+        )
+        set(NATIVE_D3D9_LIBS
+            "${BINARY_DIR}/libnine-native.a"
+            "PkgConfig::D3D"
+            X11
+            xcb
+            xcb-present
+            xcb-dri3
+            xcb-xfixes
+            X11-xcb
+        )
+        include_directories(${PROJECT_NAME}
+            "${NINE_NATIVE_INCLUDE_DIRS}"
+        )
+        add_custom_target(dependencies ALL DEPENDS nine-native)
+    else() # for DXVK Native
+        message("Using DXVK Native for D3D9 API")
+        add_definitions(-DUSE_DXVK_NATIVE)
+
+        include(ExternalProject)
+        ExternalProject_Add(dxvk-native
+            GIT_REPOSITORY    https://github.com/q4a/dxvk-native
+            GIT_TAG           e6d339793721ceeb0db8848c6a6d62c22754fa33
+#            GIT_REPOSITORY    https://github.com/q4a/dxvk
+#            GIT_TAG           308cfcb3867210ef454077c5b49541aba9b2f1e5
+#            GIT_REPOSITORY    https://github.com/doitsujin/dxvk
+#            GIT_TAG           d11878e7935023819226a674abe951f8cdfc17c9
+            GIT_SHALLOW       ON
+            BUILD_ALWAYS      OFF
+            CONFIGURE_HANDLED_BY_BUILD ON
+            CONFIGURE_COMMAND meson setup ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
+            BUILD_COMMAND     ninja
+            INSTALL_COMMAND   ""
+        )
+        ExternalProject_Get_property(dxvk-native SOURCE_DIR BINARY_DIR)
+        set(DXVK_NATIVE_INCLUDE_DIRS
+            "${SOURCE_DIR}/include/native/directx"
+            "${SOURCE_DIR}/include/native/windows"
+        )
+        set(NATIVE_D3D9_LIBS ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
+        include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
+        add_custom_target(dependencies ALL DEPENDS dxvk-native)
+    endif()
 endif()
 
 # Memory allocator option

@@ -6,6 +6,97 @@ enum
     LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE,
 };
 
+#if !defined(XR_PLATFORM_WINDOWS) // USE_LINUX D3DXGetFVFVertexSize
+
+// wine/dlls/d3dx9_36/mesh.c
+
+/*************************************************************************
+ * D3DXGetFVFVertexSize
+ */
+static UINT Get_TexCoord_Size_From_FVF(DWORD FVF, int tex_num)
+{
+    return (((((FVF) >> (16 + (2 * (tex_num)))) + 1) & 0x03) + 1);
+}
+
+UINT D3DXGetFVFVertexSize(DWORD FVF)
+{
+    DWORD size = 0;
+    UINT i;
+    UINT numTextures = (FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
+
+    if (FVF & D3DFVF_NORMAL) size += sizeof(D3DVECTOR);//D3DXVECTOR3
+    if (FVF & D3DFVF_DIFFUSE) size += sizeof(DWORD);
+    if (FVF & D3DFVF_SPECULAR) size += sizeof(DWORD);
+    if (FVF & D3DFVF_PSIZE) size += sizeof(DWORD);
+
+    switch (FVF & D3DFVF_POSITION_MASK)
+    {
+    case D3DFVF_XYZ:    size += sizeof(D3DVECTOR); break;//D3DXVECTOR3
+    case D3DFVF_XYZRHW: size += 4 * sizeof(FLOAT); break;
+    case D3DFVF_XYZB1:  size += 4 * sizeof(FLOAT); break;
+    case D3DFVF_XYZB2:  size += 5 * sizeof(FLOAT); break;
+    case D3DFVF_XYZB3:  size += 6 * sizeof(FLOAT); break;
+    case D3DFVF_XYZB4:  size += 7 * sizeof(FLOAT); break;
+    case D3DFVF_XYZB5:  size += 8 * sizeof(FLOAT); break;
+    case D3DFVF_XYZW:   size += 4 * sizeof(FLOAT); break;
+    }
+
+    for (i = 0; i < numTextures; i++)
+    {
+        size += Get_TexCoord_Size_From_FVF(FVF, i) * sizeof(FLOAT);
+    }
+
+    return size;
+}
+
+/*************************************************************************
+ * D3DXGetDeclVertexSize
+ */
+UINT D3DXGetDeclVertexSize(const D3DVERTEXELEMENT9 *decl, DWORD stream_idx)
+{
+    const D3DVERTEXELEMENT9 *element;
+    UINT size = 0;
+
+//    TRACE("decl %p, stream_idx %lu.\n", decl, stream_idx);
+
+    if (!decl) return 0;
+
+    for (element = decl; element->Stream != 0xff; ++element)
+    {
+        UINT type_size;
+
+        if (element->Stream != stream_idx) continue;
+
+        if (element->Type >= SDL_arraysize(d3dx_decltype_size))
+        {
+            Msg("Unhandled element type %#x, size will be incorrect.\n", element->Type);
+            continue;
+        }
+
+        type_size = d3dx_decltype_size[element->Type];
+        if (element->Offset + type_size > size) size = element->Offset + type_size;
+    }
+
+    return size;
+}
+
+/*************************************************************************
+ * D3DXGetDeclLength
+ */
+UINT D3DXGetDeclLength(const D3DVERTEXELEMENT9 *decl)
+{
+    const D3DVERTEXELEMENT9 *element;
+
+//    TRACE("decl %p\n", decl);
+
+    /* null decl results in exception on Windows XP */
+
+    for (element = decl; element->Stream != 0xff; ++element);
+
+    return element - decl;
+}
+#endif
+
 u32 GetFVFVertexSize(u32 FVF)
 {
     return D3DXGetFVFVertexSize(FVF);
@@ -38,7 +129,7 @@ void VertexStagingBuffer::Create(size_t size, bool allowReadBack /*= false*/)
     R_CHK(HW.pDevice->CreateVertexBuffer(size, dwUsage, 0, D3DPOOL_MANAGED, &m_DeviceBuffer, nullptr));
     VERIFY(m_DeviceBuffer);
 
-    HW.stats_manager.increment_stats_vb(m_DeviceBuffer);
+    HW.m_stats_manager.increment_stats_vb(m_DeviceBuffer);
     AddRef();
 }
 
@@ -79,7 +170,7 @@ VertexBufferHandle VertexStagingBuffer::GetBufferHandle() const
 
 void VertexStagingBuffer::Destroy()
 {
-    HW.stats_manager.decrement_stats_vb(m_DeviceBuffer);
+    HW.m_stats_manager.decrement_stats_vb(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
     m_DeviceBuffer = nullptr;
 }
@@ -128,7 +219,7 @@ void IndexStagingBuffer::Create(size_t size, bool allowReadBack /*= false*/, boo
         dwUsage |= D3DUSAGE_SOFTWAREPROCESSING;
     R_CHK(HW.pDevice->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, managed ? D3DPOOL_MANAGED : D3DPOOL_DEFAULT, &m_DeviceBuffer, NULL));
 
-    HW.stats_manager.increment_stats_ib(m_DeviceBuffer);
+    HW.m_stats_manager.increment_stats_ib(m_DeviceBuffer);
     AddRef();
 }
 
@@ -169,7 +260,7 @@ IndexBufferHandle IndexStagingBuffer::GetBufferHandle() const
 
 void IndexStagingBuffer::Destroy()
 {
-    HW.stats_manager.decrement_stats_ib(m_DeviceBuffer);
+    HW.m_stats_manager.decrement_stats_ib(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
     m_DeviceBuffer = nullptr;
 }
@@ -219,7 +310,7 @@ void VertexStreamBuffer::Create(size_t size)
         NULL));
     VERIFY(m_DeviceBuffer);
     AddRef();
-    HW.stats_manager.increment_stats_vb(m_DeviceBuffer);
+    HW.m_stats_manager.increment_stats_vb(m_DeviceBuffer);
 }
 
 void VertexStreamBuffer::Destroy()
@@ -227,7 +318,7 @@ void VertexStreamBuffer::Destroy()
     if (m_DeviceBuffer == nullptr)
         return;
 
-    HW.stats_manager.decrement_stats_vb(m_DeviceBuffer);
+    HW.m_stats_manager.decrement_stats_vb(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
 }
 
@@ -269,7 +360,7 @@ void IndexStreamBuffer::Create(size_t size)
         NULL));
     VERIFY(m_DeviceBuffer);
     AddRef();
-    HW.stats_manager.increment_stats_ib(m_DeviceBuffer);
+    HW.m_stats_manager.increment_stats_ib(m_DeviceBuffer);
 }
 
 void IndexStreamBuffer::Destroy()
@@ -277,7 +368,7 @@ void IndexStreamBuffer::Destroy()
     if (m_DeviceBuffer == nullptr)
         return;
 
-    HW.stats_manager.decrement_stats_ib(m_DeviceBuffer);
+    HW.m_stats_manager.decrement_stats_ib(m_DeviceBuffer);
     _RELEASE(m_DeviceBuffer);
 }
 

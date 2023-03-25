@@ -3,7 +3,9 @@
 
 #include "ResourceManager.h"
 
+#if defined(XR_PLATFORM_WINDOWS)
 #include "xrEngine/tntQAVI.h"
+#endif
 #include "xrEngine/xrTheora_Surface.h"
 
 #define PRIORITY_HIGH 12
@@ -106,6 +108,7 @@ void CTexture::apply_theora(u32 dwStage)
 };
 void CTexture::apply_avi(u32 dwStage) const
 {
+#if defined(XR_PLATFORM_WINDOWS)
     if (pAVI->NeedUpdate())
     {
         R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
@@ -123,6 +126,7 @@ void CTexture::apply_avi(u32 dwStage) const
 
         R_CHK(T2D->UnlockRect(0));
     }
+#endif
     CHK_DX(HW.pDevice->SetTexture(dwStage, pSurface));
 };
 void CTexture::apply_seq(u32 dwStage)
@@ -216,6 +220,7 @@ void CTexture::Load()
         }
         else if (FS.exist(fn, "$game_textures$", *cName, ".avi"))
         {
+#if defined(XR_PLATFORM_WINDOWS)
             // AVI
             pAVI = xr_new<CAviPlayerCustom>();
 
@@ -241,6 +246,7 @@ void CTexture::Load()
                     pSurface = nullptr;
                 }
             }
+#endif
         }
         else if (FS.exist(fn, "$game_textures$", *cName, ".seq"))
         {

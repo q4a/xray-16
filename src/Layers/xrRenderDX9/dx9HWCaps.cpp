@@ -4,13 +4,13 @@
 #include "Layers/xrRender/HWCaps.h"
 #include "dx9HW.h"
 
-#if !defined(_EDITOR)
+#if defined(XR_PLATFORM_WINDOWS) && !defined(_EDITOR)
 #include <nvapi.h>
 #endif
 
 namespace
 {
-#if !defined(_EDITOR)
+#if defined(XR_PLATFORM_WINDOWS) && !defined(_EDITOR)
 u32 GetNVGpuNum()
 {
     NvLogicalGpuHandle logicalGPUs[NVAPI_MAX_LOGICAL_GPUS];

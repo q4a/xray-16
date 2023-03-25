@@ -2,6 +2,14 @@
 
 #include "Common/Common.hpp"
 
+#ifdef _DEBUG
+#define D3D_DEBUG_INFO
+#endif
+#include <d3d9.h>
+#if defined(XR_PLATFORM_WINDOWS)
+#include <d3dx9.h>
+#endif
+
 #include "xrEngine/stdafx.h"
 
 #include "xrEngine/vis_common.h"
@@ -9,12 +17,6 @@
 #include "xrEngine/IGame_Level.h"
 
 #include "xrParticles/psystem.h"
-
-#ifdef _DEBUG
-#define D3D_DEBUG_INFO
-#endif
-#include <d3d9.h>
-#include <d3dx9.h>
 
 #include "Layers/xrRenderDX9/CommonTypes.h"
 

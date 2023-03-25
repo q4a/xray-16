@@ -3,6 +3,64 @@
 #include "Layers/xrRender/ShaderResourceTraits.h"
 #include "xrCore/FileCRC32.h"
 
+#if !defined(XR_PLATFORM_WINDOWS) // USE_LINUX D3DXFindShaderComment
+
+// wine-8.2/dlls/d3dx9_36/shader.c
+
+#define D3DXERR_INVALIDDATA                      0x88760b59
+
+HRESULT D3DXFindShaderComment(const DWORD *byte_code, DWORD fourcc, const void **data, UINT *size)
+{
+    const DWORD *ptr = byte_code;
+    DWORD version;
+
+//    TRACE("byte_code %p, fourcc %#lx, data %p, size %p.\n", byte_code, fourcc, data, size);
+
+    if (data) *data = NULL;
+    if (size) *size = 0;
+
+    if (!byte_code) return D3DERR_INVALIDCALL;
+
+    version = *ptr >> 16;
+    if (version != 0x4658         /* FX */
+        && version != 0x5458  /* TX */
+        && version != 0x7ffe
+        && version != 0x7fff
+        && version != 0xfffe  /* VS */
+        && version != 0xffff) /* PS */
+    {
+        Msg("Invalid data supplied\n");
+        return D3DXERR_INVALIDDATA;
+    }
+
+    while (*++ptr != D3DSIO_END)
+    {
+        /* Check if it is a comment */
+        if ((*ptr & D3DSI_OPCODE_MASK) == D3DSIO_COMMENT)
+        {
+            DWORD comment_size = (*ptr & D3DSI_COMMENTSIZE_MASK) >> D3DSI_COMMENTSIZE_SHIFT;
+
+            /* Check if this is the comment we are looking for */
+            if (*(ptr + 1) == fourcc)
+            {
+                UINT ctab_size = (comment_size - 1) * sizeof(DWORD);
+                const void *ctab_data = ptr + 2;
+                if (size)
+                    *size = ctab_size;
+                if (data)
+                    *data = ctab_data;
+//                TRACE("Returning comment data at %p with size %d\n", ctab_data, ctab_size);
+                return D3D_OK;
+            }
+            ptr += comment_size;
+        }
+    }
+
+    return S_FALSE;
+}
+
+#endif
+
 template <typename T>
 static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name,
     T*& result, bool const disasm)
@@ -30,6 +88,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
 
     if (disasm)
     {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DXDisassembleShader
         ID3DXBuffer* disasm = nullptr;
         D3DXDisassembleShader(LPDWORD(buffer), FALSE, nullptr, &disasm);
         if (!disasm)
@@ -41,6 +100,9 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         W->w(disasm->GetBufferPointer(), disasm->GetBufferSize());
         FS.w_close(W);
         _RELEASE(disasm);
+#else
+        Msg("q4a Linux can't execute D3DXDisassembleShader for:", file_name);
+#endif
     }
 
     return _hr;
@@ -59,7 +121,7 @@ inline HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     return E_FAIL;
 }
 
-
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX ID3DXInclude
 class includer : public ID3DXInclude
 {
 public:
@@ -94,6 +156,7 @@ public:
         return D3D_OK;
     }
 };
+#endif
 
 static inline bool match_shader_id(
     LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
@@ -228,12 +291,24 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
         if (file->length() > 4)
         {
             u32 savedFileCrc = file->r_u32();
+//#ifdef USE_DXVK_NATIVE
+//            if (true)
+//#else
             if (savedFileCrc == fileCrc)
+//#endif
             {
+                if (savedFileCrc != fileCrc)
+                    Msg("* Shader bad crc: savedFileCrc == %u, fileCrc == %u", savedFileCrc, fileCrc);
                 u32 savedBytecodeCrc = file->r_u32();
                 u32 bytecodeCrc = crc32(file->pointer(), file->elapsed());
+//#ifdef USE_DXVK_NATIVE
+//                if (true)
+//#else
                 if (bytecodeCrc == savedBytecodeCrc)
+//#endif
                 {
+                    if (savedBytecodeCrc != bytecodeCrc)
+                        Msg("* Shader bad crc: savedBytecodeCrc == %u, bytecodeCrc == %u", savedBytecodeCrc, bytecodeCrc);
 #ifdef DEBUG
                     Log("* Loading shader:", file_name);
 #endif
@@ -247,6 +322,7 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
 
     if (FAILED(_result))
     {
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX ID3DXInclude
         includer Includer;
         LPD3DXBUFFER pShaderBuf = nullptr;
         LPD3DXBUFFER pErrorBuf = nullptr;
@@ -281,6 +357,9 @@ HRESULT CRender::shader_compile(pcstr name, IReader* fs, pcstr pFunctionName, pc
             else
                 Msg("Can't compile shader hr=0x%08x", _result);
         }
+#else
+        Msg("q4a Linux can't build HLSL shader:", file_name);
+#endif
     }
 
     return _result;
@@ -313,6 +392,7 @@ static inline bool match_shader(
 static inline bool match_shader_id(
     LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result)
 {
+//#if !defined(USE_DXVK_NATIVE)
 #if 1
     strcpy_s(result, "");
     return false;

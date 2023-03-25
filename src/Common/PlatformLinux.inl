@@ -28,9 +28,9 @@
 
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
-
+#ifndef USE_DX9
 #define WINAPI
-
+#endif
 #define _copysign copysign
 
 #define _cdecl //__attribute__((cdecl))
@@ -46,6 +46,8 @@
 #define __declspec(x)
 #define CALLBACK
 #define TEXT(x) strdup(x)
+#define LOWORD(l) ((uint16_t) (l))
+#define HIWORD(l) ((uint16_t) (((uint32_t) (l) >> 16) & 0xffff))
 
 /*
 inline char* _strlwr_l(char* str, locale_t loc)
@@ -161,7 +163,9 @@ typedef char* LPTSTR;
 typedef const char* LPCSTR;
 typedef const char* LPCTSTR;
 typedef unsigned int UINT;
+#ifndef USE_DX9
 typedef long long int LARGE_INTEGER;
+#endif
 typedef unsigned long long int ULARGE_INTEGER;
 
 typedef wchar_t WCHAR;
@@ -219,11 +223,14 @@ typedef void* PVOID;
 typedef void* LPVOID;
 typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
+#ifndef USE_DX9
 typedef long HRESULT;
+#endif
 typedef long LRESULT;
 typedef void* HWND;
 typedef void* HDC;
 
+#ifndef USE_DX9
 typedef struct _RECT {
     long left;
     long top;
@@ -235,6 +242,7 @@ typedef struct tagPOINT {
     long x;
     long y;
 } POINT, *PPOINT, *LPPOINT;
+#endif
 
 #define DWORD_PTR UINT_PTR
 #define WM_USER 0x0400
@@ -474,6 +482,7 @@ inline int _mkdir(const char *dir) { return mkdir(dir, S_IRWXU); }
     ((DWORD)(uint8_t)(ch2) << 16) | ((DWORD)(uint8_t)(ch3) << 24 ))
 #endif
 
+#ifndef USE_DX9
 typedef enum _D3DFORMAT {
     D3DFMT_UNKNOWN              =   0,
 
@@ -1014,6 +1023,14 @@ typedef enum _D3DTEXTURETRANSFORMFLAGS {
 
     D3DTTFF_FORCE_DWORD     = 0x7fffffff
 } D3DTEXTURETRANSFORMFLAGS;
+#endif // USE_DX9
+
+typedef struct _D3DXMACRO
+{
+    LPCSTR Name;
+    LPCSTR Definition;
+
+} D3DXMACRO, *LPD3DXMACRO;
 
 #define D3DTS_WORLD  D3DTS_WORLDMATRIX(0)
 #define D3DTS_WORLD1 D3DTS_WORLDMATRIX(1)
@@ -1103,3 +1120,83 @@ inline void restore_path_separators(char * path)
 inline tm* localtime_safe(const time_t *time, struct tm* result){ return localtime_r(time, result); }
 
 #define xr_strerror(errno, buffer, bufferSize) strerror_r(errno, buffer, sizeof(buffer))
+
+// wine/include/d3dx9shader.h
+
+typedef enum _D3DXREGISTER_SET
+{
+    D3DXRS_BOOL,
+    D3DXRS_INT4,
+    D3DXRS_FLOAT4,
+    D3DXRS_SAMPLER,
+    D3DXRS_FORCE_DWORD = 0x7fffffff
+} D3DXREGISTER_SET, *LPD3DXREGISTER_SET;
+
+typedef enum D3DXPARAMETER_CLASS
+{
+    D3DXPC_SCALAR,
+    D3DXPC_VECTOR,
+    D3DXPC_MATRIX_ROWS,
+    D3DXPC_MATRIX_COLUMNS,
+    D3DXPC_OBJECT,
+    D3DXPC_STRUCT,
+    D3DXPC_FORCE_DWORD = 0x7fffffff,
+} D3DXPARAMETER_CLASS, *LPD3DXPARAMETER_CLASS;
+
+typedef enum D3DXPARAMETER_TYPE
+{
+    D3DXPT_VOID,
+    D3DXPT_BOOL,
+    D3DXPT_INT,
+    D3DXPT_FLOAT,
+    D3DXPT_STRING,
+    D3DXPT_TEXTURE,
+    D3DXPT_TEXTURE1D,
+    D3DXPT_TEXTURE2D,
+    D3DXPT_TEXTURE3D,
+    D3DXPT_TEXTURECUBE,
+    D3DXPT_SAMPLER,
+    D3DXPT_SAMPLER1D,
+    D3DXPT_SAMPLER2D,
+    D3DXPT_SAMPLER3D,
+    D3DXPT_SAMPLERCUBE,
+    D3DXPT_PIXELSHADER,
+    D3DXPT_VERTEXSHADER,
+    D3DXPT_PIXELFRAGMENT,
+    D3DXPT_VERTEXFRAGMENT,
+    D3DXPT_UNSUPPORTED,
+    D3DXPT_FORCE_DWORD = 0x7fffffff,
+} D3DXPARAMETER_TYPE, *LPD3DXPARAMETER_TYPE;
+
+typedef struct _D3DXSHADER_CONSTANTTABLE
+{
+    DWORD Size;
+    DWORD Creator;
+    DWORD Version;
+    DWORD Constants;
+    DWORD ConstantInfo;
+    DWORD Flags;
+    DWORD Target;
+} D3DXSHADER_CONSTANTTABLE, *LPD3DXSHADER_CONSTANTTABLE;
+
+typedef struct _D3DXSHADER_CONSTANTINFO
+{
+    DWORD Name;
+    WORD  RegisterSet;
+    WORD  RegisterIndex;
+    WORD  RegisterCount;
+    WORD  Reserved;
+    DWORD TypeInfo;
+    DWORD DefaultValue;
+} D3DXSHADER_CONSTANTINFO, *LPD3DXSHADER_CONSTANTINFO;
+
+typedef struct _D3DXSHADER_TYPEINFO
+{
+    WORD  Class;
+    WORD  Type;
+    WORD  Rows;
+    WORD  Columns;
+    WORD  Elements;
+    WORD  StructMembers;
+    DWORD StructMemberInfo;
+} D3DXSHADER_TYPEINFO, *LPD3DXSHADER_TYPEINFO;

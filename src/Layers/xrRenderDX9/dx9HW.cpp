@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
 #include "dx9HW.h"
+#ifdef USE_MESA_NINE
+#include "nine_sdl.h"
+#endif
 
 CHW HW;
 
@@ -24,19 +27,34 @@ CHW::~CHW()
 
 void CHW::OnAppActivate()
 {
+#if defined(XR_PLATFORM_WINDOWS)
     if (!DevPP.Windowed)
     {
         ShowWindow(DevPP.hDeviceWindow, SW_RESTORE);
     }
+#else
+    if (DevPP.hDeviceWindow)
+    {
+        SDL_RestoreWindow((SDL_Window *)DevPP.hDeviceWindow);
+    }
+#endif
 }
 
 void CHW::OnAppDeactivate()
 {
+#if defined(XR_PLATFORM_WINDOWS)
     if (!DevPP.Windowed)
     {
         if (psDeviceMode.WindowStyle == rsFullscreen || psDeviceMode.WindowStyle == rsFullscreenBorderless)
             ShowWindow(DevPP.hDeviceWindow, SW_MINIMIZE);
     }
+#else
+    if (DevPP.hDeviceWindow)
+    {
+        if (psDeviceMode.WindowStyle == rsFullscreen || psDeviceMode.WindowStyle == rsFullscreenBorderless)
+            SDL_MinimizeWindow((SDL_Window *)DevPP.hDeviceWindow);
+    }
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -44,6 +62,7 @@ void CHW::OnAppDeactivate()
 //////////////////////////////////////////////////////////////////////
 void CHW::CreateD3D()
 {
+#if defined(XR_PLATFORM_WINDOWS)
     hD3D = XRay::LoadModule(GEnv.isDedicatedServer ? "xrD3D9-Null" : "d3d9");
     R_ASSERT2(hD3D->IsLoaded(), "Can't find 'd3d9.dll'\nPlease install latest version of DirectX before running this program");
 
@@ -51,6 +70,9 @@ void CHW::CreateD3D()
     const auto createD3D = (_Direct3DCreate9*)hD3D->GetProcAddress("Direct3DCreate9");
     R_ASSERT(createD3D);
     pD3D = createD3D(D3D_SDK_VERSION);
+#else
+    pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+#endif // XR_PLATFORM_WINDOWS
     R_ASSERT2(pD3D, "Please install DirectX 9.0c");
 }
 
@@ -161,6 +183,7 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
     // Windoze
     P.SwapEffect = bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
 
+#if defined(XR_PLATFORM_WINDOWS)
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     if (SDL_GetWindowWMInfo(m_sdlWnd, &info))
@@ -175,6 +198,9 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
     }
     else
         Log("! Couldn't get window information: ", SDL_GetError());
+#else
+    P.hDeviceWindow = m_sdlWnd;
+#endif
 
     P.Windowed = bWindowed;
 
@@ -227,8 +253,12 @@ void CHW::CreateDevice(SDL_Window* m_sdlWnd)
     }
 
     // Capture PIX events
+#if defined(XR_PLATFORM_WINDOWS) // FIX_LINUX D3DPERF_*Event
     d3dperf_BeginEvent = static_cast<decltype(d3dperf_BeginEvent)>(hD3D->GetProcAddress("D3DPERF_BeginEvent"));
     d3dperf_EndEvent = static_cast<decltype(d3dperf_EndEvent)>(hD3D->GetProcAddress("D3DPERF_EndEvent"));
+#else
+    Msg("q4a D3DPERF_*Event");
+#endif
 
     // Capture misc data
 #ifdef DEBUG
@@ -291,8 +321,11 @@ void CHW::Reset()
 #endif
 }
 
-void CHW::SetPrimaryAttributes(u32& /*windowFlags*/)
+void CHW::SetPrimaryAttributes(u32& windowFlags)
 {
+    #if defined(USE_DXVK_NATIVE)
+        windowFlags |= SDL_WINDOW_VULKAN;
+    #endif
     Caps.bForceGPU_SW      = strstr(Core.Params, "-gpu_sw");
     Caps.bForceGPU_NonPure = strstr(Core.Params, "-gpu_nopure");
     Caps.bForceGPU_REF     = strstr(Core.Params, "-gpu_ref");
