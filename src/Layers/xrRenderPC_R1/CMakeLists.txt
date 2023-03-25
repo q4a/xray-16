@@ -154,14 +154,6 @@ target_include_directories(${PROJECT_NAME}
     ${DXVK_NATIVE_INCLUDE_DIRS}
 )
 
-if (WIN32)
-set(PLATFORM_LIBS "")
-elseif (USE_MESA_NINE)
-set(PLATFORM_LIBS "nine-native")
-else()
-set(PLATFORM_LIBS "${DXVK_NATIVE_D3D9_LIB}")
-endif()
-
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     xrCore
@@ -174,7 +166,7 @@ target_link_libraries(${PROJECT_NAME}
     xrMiscMath
     xrImGui
     ${SDL2_LIBRARIES}
-    ${PLATFORM_LIBS}
+    ${NATIVE_D3D9_LIBS}
 )
 
 target_compile_definitions(${PROJECT_NAME}

@@ -264,13 +264,36 @@ if (NOT WIN32)
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(D3D REQUIRED IMPORTED_TARGET d3d)
 
-        add_subdirectory(Externals/nine-native)
-        set(NINE_NATIVE_INCLUDE_DIRS
-            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include"
-            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/directx"
-            "${CMAKE_CURRENT_SOURCE_DIR}/Externals/nine-native/include/windows"
+        include(ExternalProject)
+        ExternalProject_Add(nine-native
+            GIT_REPOSITORY    https://github.com/q4a/nine-native
+            GIT_TAG           main
+            GIT_SHALLOW       ON
+            BUILD_ALWAYS      OFF
+            BUILD_BYPRODUCTS  <BINARY_DIR>/libnine-native.a
+            CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Debug -DNINE_POSITION_INDEPENDENT=ON
+            INSTALL_COMMAND   ""
         )
-        include_directories("${NINE_NATIVE_INCLUDE_DIRS}")
+        ExternalProject_Get_property(nine-native SOURCE_DIR BINARY_DIR)
+        set(NINE_NATIVE_INCLUDE_DIRS
+            "${SOURCE_DIR}/include"
+            "${SOURCE_DIR}/include/D3D9"
+            "${SOURCE_DIR}/include/windows"
+        )
+        set(NATIVE_D3D9_LIBS
+            "${BINARY_DIR}/libnine-native.a"
+            "PkgConfig::D3D"
+            X11
+            xcb
+            xcb-present
+            xcb-dri3
+            xcb-xfixes
+            X11-xcb
+        )
+        include_directories(${PROJECT_NAME}
+            "${NINE_NATIVE_INCLUDE_DIRS}"
+        )
+        add_custom_target(dependencies ALL DEPENDS nine-native)
     else() # for DXVK Native
         message("Using DXVK Native for D3D9 API")
         add_definitions(-DUSE_DXVK_NATIVE)
@@ -281,6 +304,8 @@ if (NOT WIN32)
             GIT_TAG           e6d339793721ceeb0db8848c6a6d62c22754fa33
 #            GIT_REPOSITORY    https://github.com/q4a/dxvk
 #            GIT_TAG           308cfcb3867210ef454077c5b49541aba9b2f1e5
+#            GIT_REPOSITORY    https://github.com/doitsujin/dxvk
+#            GIT_TAG           d11878e7935023819226a674abe951f8cdfc17c9
             GIT_SHALLOW       ON
             BUILD_ALWAYS      OFF
             CONFIGURE_HANDLED_BY_BUILD ON
@@ -293,9 +318,9 @@ if (NOT WIN32)
             "${SOURCE_DIR}/include/native/directx"
             "${SOURCE_DIR}/include/native/windows"
         )
-        set(DXVK_NATIVE_D3D9_LIB ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
+        set(NATIVE_D3D9_LIBS ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
         include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
-        ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native)
+        add_custom_target(dependencies ALL DEPENDS dxvk-native)
     endif()
 endif()
 

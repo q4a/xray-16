@@ -71,11 +71,7 @@ void CHW::CreateD3D()
     R_ASSERT(createD3D);
     pD3D = createD3D(D3D_SDK_VERSION);
 #else
-#ifdef USE_MESA_NINE
-    pD3D = Direct3DCreate9_SDL((SDL_Window *)DevPP.hDeviceWindow);
-#else
     pD3D = Direct3DCreate9(D3D_SDK_VERSION);
-#endif
 #endif // XR_PLATFORM_WINDOWS
     R_ASSERT2(pD3D, "Please install DirectX 9.0c");
 }
