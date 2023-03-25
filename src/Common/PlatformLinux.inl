@@ -28,9 +28,9 @@
 
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
-
+#ifndef USE_DX9
 #define WINAPI
-
+#endif
 #define _copysign copysign
 
 #define _cdecl //__attribute__((cdecl))

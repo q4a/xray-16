@@ -271,7 +271,7 @@ if (NOT WIN32)
             GIT_SHALLOW       ON
             BUILD_ALWAYS      OFF
             BUILD_BYPRODUCTS  <BINARY_DIR>/libnine-native.a
-            CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Debug -DNINE_POSITION_INDEPENDENT=ON
+            CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release -DNINE_POSITION_INDEPENDENT=ON
             INSTALL_COMMAND   ""
         )
         ExternalProject_Get_property(nine-native SOURCE_DIR BINARY_DIR)
@@ -309,7 +309,7 @@ if (NOT WIN32)
             GIT_SHALLOW       ON
             BUILD_ALWAYS      OFF
             CONFIGURE_HANDLED_BY_BUILD ON
-            CONFIGURE_COMMAND meson ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
+            CONFIGURE_COMMAND meson setup ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
             BUILD_COMMAND     ninja
             INSTALL_COMMAND   ""
         )
