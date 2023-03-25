@@ -135,9 +135,6 @@ set(SRC_FILES
     "xrRender_R1.cpp"
 )
 
-# Fix for dx9HW.h. It has weird member: stats_manager stats_manager;
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
-
 group_sources(SRC_FILES)
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
@@ -151,7 +148,6 @@ target_include_directories(${PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Externals/gli
     ${CMAKE_SOURCE_DIR}/sdk/include
     ${SDL2_INCLUDE_DIRS}
-    ${DXVK_NATIVE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
